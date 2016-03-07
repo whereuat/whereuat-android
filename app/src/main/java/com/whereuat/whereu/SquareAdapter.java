@@ -2,6 +2,7 @@ package com.whereuat.whereu;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +77,8 @@ public class SquareAdapter extends  BaseAdapter{
             View v = flipper.findViewById(R.id.front_view);
             v.setBackgroundColor(generateRandomColor());
             TextView textView = (TextView) v.findViewById(R.id.front_view_text);
+            Typeface tfont = Typeface.createFromAsset(mContext.getAssets(), "Lato-Regular.ttf");
+            textView.setTypeface(tfont);
             textView.setText(vals[position]);
 
             int ideal_size = calculateIdealSize();
