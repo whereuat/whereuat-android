@@ -3,6 +3,7 @@
     <declare-styleable name="AutoShareStar">
         <attr name="draw_color" format="color" />
         <attr name="is_filled" format="boolean" />
+        <attr name="is_clickable" format="boolean" />
     </declare-styleable>
     <declare-styleable name="LatoTextView">
         <attr name="lato_font" format="enum">

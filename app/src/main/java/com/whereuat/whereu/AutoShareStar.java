@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.view.View;
 public class AutoShareStar extends View {
     private int mColor;
     private boolean mIsFilled;
+    private boolean mIsClickable;
     private Paint mPaint;
     private Path mPath;
 
@@ -22,8 +24,10 @@ public class AutoShareStar extends View {
         super(context, attrs);
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AutoShareStar);
         try {
-            mColor = ta.getColor(R.styleable.AutoShareStar_draw_color, 0);
+            mColor = ta.getColor(R.styleable.AutoShareStar_draw_color,
+                                 ContextCompat.getColor(context, R.color.offWhite));
             mIsFilled = ta.getBoolean(R.styleable.AutoShareStar_is_filled, true);
+            mIsClickable = ta.getBoolean(R.styleable.AutoShareStar_is_clickable, false);
         } finally {
             ta.recycle();
         }
@@ -39,7 +43,7 @@ public class AutoShareStar extends View {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_UP){
+        if(event.getAction() == MotionEvent.ACTION_UP && mIsClickable){
             this.toggleFilled();
         }
         return true;

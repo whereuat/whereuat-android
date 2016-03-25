@@ -16,7 +16,8 @@
             android:layout_alignParentTop="true"
             android:layout_height="@dimen/auto_share_star_height"
             android:layout_width="@dimen/auto_share_star_width"
-            app:draw_color="@color/offWhite"/>
+            app:draw_color="@color/offWhite"
+            app:is_clickable="false" />
         <com.whereuat.whereu.LatoTextView
             android:id="@+id/front_view_initials"
             app:lato_font="semibold"
@@ -75,7 +76,8 @@
                 android:layout_height="@dimen/auto_share_star_height"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="@dimen/spacing_margin"
-                app:draw_color="@color/darkGray" />
+                app:draw_color="@color/darkGray"
+                app:is_clickable="true" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/requested_section"
