@@ -1,40 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container_flipper"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/front_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/front_view_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textColor="@android:color/white"
-            android:textSize="25dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/back_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@android:color/black">
+        android:padding="@dimen/spacing_margin" >
+        <com.whereuat.whereu.AutoShareStar
+            android:id="@+id/auto_share_status"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_height="@dimen/auto_share_star_height"
+            android:layout_width="@dimen/auto_share_star_width"
+            app:draw_color="@color/offWhite"
+            app:is_clickable="false" />
+        <com.whereuat.whereu.LatoTextView
+            android:id="@+id/front_view_initials"
+            app:lato_font="semibold"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@color/offWhite"
+            android:textSize="@dimen/front_initials_font_size" />
+        <com.whereuat.whereu.LatoTextView
+            android:id="@+id/front_view_fullname"
+            android:ellipsize="end"
+            app:lato_font="regular"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:singleLine="true"
+            android:textColor="@color/offWhite"
+            android:textSize="@dimen/front_fullname_font_size" />
+    </RelativeLayout>
 
-        <TextView
+    <RelativeLayout
+        android:id="@+id/back_view"
+        android:background="@color/offWhite"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:padding="@dimen/spacing_margin">
+        <com.whereuat.whereu.LatoTextView
+            android:id="@+id/back_view_fullname"
+            app:lato_font="bold"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_margin_wide"
+            android:layout_width="wrap_content"
+            android:textColor="@color/darkGray"
+            android:textSize="18sp"
+            android:textAlignment="center"/>
+        <LinearLayout
+            android:id="@+id/auto_share_section"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Back"
-            android:textColor="@android:color/white"
-            android:textSize="25dp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:layout_centerInParent="true">
+            <com.whereuat.whereu.LatoTextView
+                android:id="@+id/auto_share_text"
+                app:lato_font="regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Auto Share?"
+                android:textColor="@color/darkGray"
+                android:textSize="18sp" />
+            <com.whereuat.whereu.AutoShareStar
+                android:id="@+id/auto_share_button"
+                android:layout_width="@dimen/auto_share_star_width"
+                android:layout_height="@dimen/auto_share_star_height"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/spacing_margin"
+                app:draw_color="@color/darkGray"
+                app:is_clickable="true" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/requested_section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".70"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true">
+            <com.whereuat.whereu.LatoTextView
+                app:lato_font="regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Requested"
+                android:textColor="@color/darkGray"
+                android:textSize="18sp"
+                android:textAlignment="center" />
+            <com.whereuat.whereu.LatoTextView
+                android:id="@+id/requested_text"
+                app:lato_font="regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5,002 times"
+                android:textColor="@color/darkGray"
+                android:textSize="18sp"
+                android:textAlignment="center" />
+        </LinearLayout>
+    </RelativeLayout>
 </ViewFlipper>

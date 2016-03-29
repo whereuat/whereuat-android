@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AutoShareStar">
+        <attr name="draw_color" format="color" />
+        <attr name="is_filled" format="boolean" />
+        <attr name="is_clickable" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="LatoTextView">
+        <attr name="lato_font" format="enum">
+            <enum name="bold" value="0" />
+            <enum name="regular" value="1" />
+            <enum name="semibold" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -2,7 +2,6 @@ package com.whereuat.whereu;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,11 @@ import java.util.Random;
  */
 public class SquareAdapter extends  BaseAdapter{
     private Context mContext;
-    private final String[] vals = new String[] {"Spencer", "Julius", "Peter", "Ray", "Spetelius"};
+    private final String[] vals = new String[] {"Spencer Whitehead", "Julius Alexander IV",
+                                                "Peter Kang", "Ray Shu Jacobson",
+                                                "Spetelius Bartlebee Cayenne Ray",
+                                                "Spencer Whitehead", "Julius Alexander IV",
+                                                "Peter Kang", "Ray Shu Jacobson"};
 
     public SquareAdapter(Context c) {
         mContext = c;
@@ -45,7 +48,6 @@ public class SquareAdapter extends  BaseAdapter{
 
     @Override
     public long getItemId(int position) {
-
         return 0;
     }
 
@@ -73,13 +75,8 @@ public class SquareAdapter extends  BaseAdapter{
         final ViewFlipper flipper;
         if (convertView == null) {
             flipper = (ViewFlipper) inflater.inflate(R.layout.grid_item_container, null);
-//            flipper.getDisplayedChild();
-            View v = flipper.findViewById(R.id.front_view);
-            v.setBackgroundColor(generateRandomColor());
-            TextView textView = (TextView) v.findViewById(R.id.front_view_text);
-            Typeface tfont = Typeface.createFromAsset(mContext.getAssets(), "Lato-Regular.ttf");
-            textView.setTypeface(tfont);
-            textView.setText(vals[position]);
+            setupFront(flipper.findViewById(R.id.front_view), vals[position]);
+            setupBack(flipper.findViewById(R.id.back_view), vals[position]);
 
             int ideal_size = calculateIdealSize();
             flipper.setLayoutParams(new GridView.LayoutParams(ideal_size, ideal_size));
@@ -87,7 +84,7 @@ public class SquareAdapter extends  BaseAdapter{
                 @Override
                 public boolean onLongClick(View click) {
                     AnimationFactory.flipTransition(flipper,
-                            AnimationFactory.FlipDirection.LEFT_RIGHT);
+                            AnimationFactory.FlipDirection.RIGHT_LEFT);
                     return true;
                 }
             });
@@ -98,5 +95,41 @@ public class SquareAdapter extends  BaseAdapter{
         return flipper;
     }
 
-//    private Canvas drawStar()
+    private void setupFront(View v, String name) {
+        v.setBackgroundColor(generateRandomColor());
+        // TODO: Only here for example. Remove once mock data is in the DB and functional.
+        AutoShareStar star = (AutoShareStar) v.findViewById(R.id.auto_share_status);
+        if (name.length()%2 == 0)
+            star.setVisibility(View.INVISIBLE);
+
+        // Set up the initials TextView
+        ((TextView) v.findViewById(R.id.front_view_initials)).setText(getInitials(name));
+
+        // Set up the fullname TextView
+        ((TextView) v.findViewById(R.id.front_view_fullname)).setText(name);
+    }
+
+    private void setupBack(View v, String name) {
+        // TODO: Only here for example. Remove once mock data is in the DB and functional.
+        AutoShareStar star = (AutoShareStar) v.findViewById(R.id.auto_share_button);
+        if (name.length()%2 == 0)
+            star.toggleFilled();
+
+        // Set up the fullname TextView
+        ((TextView) v.findViewById(R.id.back_view_fullname)).setText(name);
+    }
+
+    // TODO: Flesh this function out once contacts are being pulled from the DB.
+    private String getInitials(String name) {
+        String[] names = name.split(" ");
+        if (names.length == 2) {
+            return String.format("%c%c", getFirstInitial(names[0]), getFirstInitial(names[1]));
+        }
+        return "XX";
+    }
+
+    private char getFirstInitial(String name) {
+        if (name.length() < 0) return 'X';
+        return Character.toUpperCase(name.charAt(0));
+    }
 }
