@@ -2,7 +2,8 @@
 <FrameLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="match_parent"
-android:layout_height="match_parent">
+android:layout_height="match_parent"
+    android:onClick="sendGcmToken">
 <GridView
     android:id="@+id/contact_gridview"
     android:layout_width="match_parent"
@@ -12,4 +13,14 @@ android:layout_height="match_parent">
     android:stretchMode="columnWidth"
     android:numColumns="2"
     />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="136dp"
+        android:text="tmp button"
+        android:id="@+id/button3"
+        android:layout_gravity="center"
+        android:enabled="true"
+        android:onClick="sendGcmToken" />
+
 </FrameLayout>

@@ -41,7 +41,6 @@ import java.net.URL;
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
-    private static final String[] TOPICS = {"global"};
 
     public RegistrationIntentService() {
         super(TAG);
@@ -62,13 +61,9 @@ public class RegistrationIntentService extends IntentService {
             String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
-            Log.i(TAG, "GCM Registration Token: " + token);
 
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
-
-            // Subscribe to topic channels
-            subscribeTopics(token);
 
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
@@ -83,35 +78,38 @@ public class RegistrationIntentService extends IntentService {
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(GcmPreferences.REGISTRATION_COMPLETE);
-        // TODO: UI should do something when registration is complete
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
-    /**
-     * Persist registration to third-party servers.
-     *
-     * Modify this method to associate the user's GCM registration token with any server-side account
-     * maintained by your application.
-     *
-     * @param token The new token.
-     */
     private void sendRegistrationToServer(String token) {
-        // Add custom implementation, as needed.
-    }
+        // TODO: Get these from the login activity
+        String phone = "+1XXXXXXXXXX";
+        String verifier = "XXXXX";
 
-    /**
-     * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
-     *
-     * @param token GCM token
-     * @throws IOException if unable to reach the GCM PubSub service
-     */
-    // [START subscribe_topics]
-    private void subscribeTopics(String token) throws IOException {
-        GcmPubSub pubSub = GcmPubSub.getInstance(this);
-        for (String topic : TOPICS) {
-            pubSub.subscribe(token, "/topics/" + topic, null);
+        try {
+            JSONObject jData = new JSONObject();
+            try {
+                jData.put("phone-#", phone);
+                jData.put("gcm-token", token);
+                jData.put("verification-code", verifier);
+            } catch (JSONException e) {
+                Log.d(TAG, "Failed to build JSON object for new account", e);
+            }
+
+            // TODO: Use utility POST method for this
+            Log.i(TAG, "Sending token to whereuat server");
+            URL url = new URL("http://whereuat.xyz/account/new");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+
+            OutputStream outputStream = conn.getOutputStream();
+            outputStream.write(jData.toString().getBytes());
+
+            conn.getInputStream();
+        } catch (Exception e) {
+            Log.d(TAG, "Failed to send token to server", e);
         }
     }
-    // [END subscribe_topics]
-
 }
