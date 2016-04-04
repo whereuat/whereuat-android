@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">whereu@</string>
     <string name="action_settings">Settings</string>
+    <string name="verification_input_text">Enter the Verification Number</string>
+    <string name="phone_number_input_text">Enter Your Phone #</string>
+    <string name="account_request_btn_text">Let\'s go!</string>
+    <string name="account_create_btn_text">Create</string>
+    <string name="logo_description">whereu@ logo</string>
 </resources>
