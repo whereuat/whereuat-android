@@ -23,20 +23,10 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.whereuat.whereu.Constants;
 import com.whereuat.whereu.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class RegistrationIntentService extends IntentService {
 
@@ -50,6 +40,7 @@ public class RegistrationIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        String token = "";
         try {
             // [START register_for_gcm]
             // Initially this call goes out to the network to retrieve the token, subsequent calls
@@ -58,12 +49,9 @@ public class RegistrationIntentService extends IntentService {
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
             InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
+            token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
-
-            // TODO: Implement this method to send any registration to your app's servers.
-            sendRegistrationToServer(token);
 
             // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
@@ -76,40 +64,9 @@ public class RegistrationIntentService extends IntentService {
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(GcmPreferences.SENT_TOKEN_TO_SERVER, false).apply();
         }
-        // Notify UI that registration has completed, so the progress indicator can be hidden.
-        Intent registrationComplete = new Intent(GcmPreferences.REGISTRATION_COMPLETE);
+        // Broadcast the token to the login activity.
+        Intent registrationComplete = new Intent(Constants.TOKEN_BROADCAST);
+        registrationComplete.putExtra(Constants.TOKEN_EXTRA, token);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
-    }
-
-    private void sendRegistrationToServer(String token) {
-        // TODO: Get these from the login activity
-        String phone = "+1XXXXXXXXXX";
-        String verifier = "XXXXX";
-
-        try {
-            JSONObject jData = new JSONObject();
-            try {
-                jData.put("phone-#", phone);
-                jData.put("gcm-token", token);
-                jData.put("verification-code", verifier);
-            } catch (JSONException e) {
-                Log.d(TAG, "Failed to build JSON object for new account", e);
-            }
-
-            // TODO: Use utility POST method for this
-            Log.i(TAG, "Sending token to whereuat server");
-            URL url = new URL("http://whereuat.xyz/account/new");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-
-            OutputStream outputStream = conn.getOutputStream();
-            outputStream.write(jData.toString().getBytes());
-
-            conn.getInputStream();
-        } catch (Exception e) {
-            Log.d(TAG, "Failed to send token to server", e);
-        }
     }
 }
