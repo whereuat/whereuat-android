@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.whereuat.whereu.gcm.RegistrationIntentService;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,8 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     private HttpRequestHandler mHttpReqHandler;
     private AccountNewBroadcastReceiver mAccountNewReceiver;
     private AccountRequestBroadcastReceiver mAccountRequestReceiver;
+    private TokenBroadcastReceiver mTokenReceiver;
     private IntentFilter mAccountNewFilter;
     private IntentFilter mAccountRequestFilter;
+    private IntentFilter mTokenFilter;
 
 
     @Override
@@ -48,6 +53,10 @@ public class LoginActivity extends AppCompatActivity {
         mAccountRequestReceiver = new AccountRequestBroadcastReceiver();
         registerReceiver(mAccountRequestReceiver, mAccountRequestFilter);
 
+        mTokenFilter = new IntentFilter(Constants.TOKEN_BROADCAST);
+        mTokenReceiver = new TokenBroadcastReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mTokenReceiver, mTokenFilter);
+
         if (mPrefs.isWaitingForVerify())
             showCreateHideRequest();
         else
@@ -63,6 +72,10 @@ public class LoginActivity extends AppCompatActivity {
         try {
             unregisterReceiver(mAccountRequestReceiver);
         } catch (IllegalArgumentException e) {}
+
+        try {
+            unregisterReceiver(mTokenReceiver);
+        } catch (IllegalArgumentException e) {}
         super.onPause();
     }
 
@@ -74,6 +87,10 @@ public class LoginActivity extends AppCompatActivity {
 
         try {
             registerReceiver(mAccountRequestReceiver, mAccountRequestFilter);
+        } catch (IllegalArgumentException e) {}
+
+        try {
+            registerReceiver(mTokenReceiver, mTokenFilter);
         } catch (IllegalArgumentException e) {}
         super.onResume();
     }
@@ -105,13 +122,8 @@ public class LoginActivity extends AppCompatActivity {
         mAccountRequestSection.setVisibility(View.VISIBLE);
     }
 
-    private String generateGcmToken() {
-        return "la-dee-da-I'm a token";
-    }
-
     public void createNewAccount(View v) {
-        mHttpReqHandler.postAccountNew(mPrefs.getClientPhoneNumber(), generateGcmToken(),
-                mVerifyCode.getText().toString());
+        startService(new Intent(this, RegistrationIntentService.class));
     }
 
     /*
@@ -160,6 +172,18 @@ public class LoginActivity extends AppCompatActivity {
                 showRequestHideCreate();
                 mPrefs.setWaitingForVerifyPref(false);
             }
+        }
+    }
+
+    /*
+        A receiver for handling token generation. This receiver will trigger the new account
+        request after generating the GCM token.
+     */
+    private class TokenBroadcastReceiver extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            String token = intent.getStringExtra(Constants.TOKEN_EXTRA);
+            mHttpReqHandler.postAccountNew(mPrefs.getClientPhoneNumber(), token,
+                    mVerifyCode.getText().toString());
         }
     }
 }

@@ -3,6 +3,11 @@
     package="com.whereuat.whereu">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <permission android:name="com.whereuat.whereu.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.whereuat.whereu.permission.C2D_MESSAGE"/>
 
     <application
         android:allowBackup="true"
@@ -35,6 +40,36 @@
             android:name=".HttpRequestHandler$HttpPost"
             android:exported="false" />
 
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.whereuat.whereu" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".gcm.WuaGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".gcm.WuaInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".gcm.RegistrationIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

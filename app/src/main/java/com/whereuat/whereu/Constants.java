@@ -9,9 +9,12 @@ public class Constants {
     public static final String ACCOUNT_NEW_ROUTE = "account/new";
 
     public static final String RESPONSE_CODE_EXTRA = "RESPONSE_CODE";
+    public static final String TOKEN_EXTRA = "TOKEN";
 
     public static final String ACCOUNT_REQUEST_BROADCAST =
             "com.whereuat.whereu.ACCOUNT_REQUEST_BROADCAST";
     public static final String ACCOUNT_NEW_BROADCAST =
             "com.whereuat.whereu.ACCOUNT_NEW_BROADCAST";
+    public static final String TOKEN_BROADCAST =
+            "com.whereuat.whereu.TOKEN_BROADCAST";
 }
