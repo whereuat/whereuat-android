@@ -1,6 +1,7 @@
 package com.whereuat.whereu;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -86,6 +87,12 @@ public class SquareAdapter extends  BaseAdapter{
                     AnimationFactory.flipTransition(flipper,
                             AnimationFactory.FlipDirection.RIGHT_LEFT);
                     return true;
+                }
+            });
+            flipper.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View click) {
+                    mContext.startService(new Intent(mContext, LocationProviderService.class));
                 }
             });
         } else {
