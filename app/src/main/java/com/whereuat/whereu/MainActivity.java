@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent= new Intent(Intent.ACTION_PICK,  ContactsContract.Contacts.CONTENT_URI);
                     startActivityForResult(intent, 1);
                 } else {
-                    Toast.makeText(this, "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Until you grant the permission, we cannot display the names", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -120,19 +120,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, 1);
         }
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
-//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // Permission is granted
-//                Intent intent= new Intent(Intent.ACTION_PICK,  ContactsContract.Contacts.CONTENT_URI);
-//                startActivityForResult(intent, 1);
-//            } else {
-//                Toast.makeText(this, "Until you grant the permission, we canot display the names", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
 
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
