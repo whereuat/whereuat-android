@@ -13,8 +13,8 @@ import android.content.Context;
 public class ContactRetriever {
     private static Context mContext;
     private static String phone_num;
-    private String contactID;
-    private String contactName;
+    private String contact_id;
+    private String contact_name;
     private static final String[] projection = {
         ContactsContract.Contacts._ID,
         ContactsContract.Contacts.DISPLAY_NAME
@@ -30,8 +30,8 @@ public class ContactRetriever {
 
                     Cursor c =  con.getContentResolver().query(contactData, projection, null, null, null);
                     if (c.moveToFirst()) {
-                        contactID = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
-                        contactName = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                        contact_id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+                        contact_name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                     }
                     c.close();
 
@@ -42,7 +42,7 @@ public class ContactRetriever {
                                     ContactsContract.CommonDataKinds.Phone.TYPE + " = " +
                                     ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
 
-                            new String[]{contactID},
+                            new String[]{contact_id},
                             null);
 
                     if (cursorPhone.moveToFirst()) {
@@ -56,11 +56,11 @@ public class ContactRetriever {
     }
 
     public String getContactID(){
-        return contactID;
+        return contact_id;
     }
 
     public String getContactName(){
-        return contactName;
+        return contact_name;
     }
 
     public String getPhoneNumber(){
