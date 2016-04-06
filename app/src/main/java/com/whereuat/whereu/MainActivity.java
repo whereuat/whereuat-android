@@ -2,6 +2,7 @@ package com.whereuat.whereu;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,6 +20,9 @@ import android.os.Build;
 import android.provider.ContactsContract;
 import android.view.View;
 
+import com.whereuat.whereu.db.DbTask;
+import com.whereuat.whereu.db.command.InsertCommand;
+import com.whereuat.whereu.db.entry.ContactEntry;
 
 public class MainActivity extends AppCompatActivity {
     private IntentFilter mLocationFilter;
@@ -122,12 +126,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: get contact name and phone number from the ContractRetriever object.
-    // Use this information to add a new contact to the database.
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
         ContactRetriever con = new ContactRetriever(reqCode,resultCode, data, this.getApplicationContext());
+
+        ContentValues values = new ContentValues();
+        values.put(ContactEntry.COLUMN_NAME_NAME, con.getContactName());
+        values.put(ContactEntry.COLUMN_NAME_PHONE, con.getPhoneNumber());
+        values.put(ContactEntry.COLUMN_NAME_AUTOSHARE, false);
+
+        InsertCommand cmd = new InsertCommand(this, ContactEntry.TABLE_NAME, null, values);
+        new DbTask(new DbTask.AsyncResponse() {
+            @Override
+            public void processFinish(Object result) {
+                if ((Long)result != -1) {
+                    Log.d(TAG, "Successfully inserted contact");
+                } else {
+                    Log.d(TAG, "Some weird things happened when inserting contact into DB");
+                }
+            }
+        }).execute(cmd);
     }
 }
 
