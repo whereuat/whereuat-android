@@ -20,25 +20,23 @@ public final class WhereuatContract {
 
     public WhereuatContract() {}
 
+    // column_name_type is a list of pairs of column names and their types
     @SafeVarargs
-    public static String createTable(String table_name, Pair<String, String>... columns) {
-        String sql_string = "CREATE TABLE " + table_name;
-        if (columns.length == 0) {
+    private static String createTable(String table_name, Pair<String, String>... column_name_types) {
+        if (column_name_types.length == 0) {
             Log.d(TAG, "No columns provided for table " + table_name);
-            return sql_string;
+            return "";
         }
-        sql_string += "(";
-        for (Pair<String, String> column: columns) {
-            sql_string += column.first + " " + column.second + ",";
+        String schema = "";
+        for (Pair<String, String> column_name_type: column_name_types) {
+            schema += String.format("%s %s,", column_name_type.first, column_name_type.second);
         }
-        sql_string = sql_string.substring(0, sql_string.length()-1);
-        sql_string += ");";
-
-        return sql_string;
+        schema = schema.substring(0, schema.length()-1);
+        return String.format("CREATE TABLE %s (%s);", table_name, schema);
     }
 
-    public static String dropTableIfExists(String table_name) {
-        return "DROP TABLE IF EXISTS " + table_name + ";";
+    private static String dropTableIfExists(String table_name) {
+        return String.format("DROP TABLE IF EXISTS %s;", table_name);
     }
 
     public static final String SQL_CREATE_ENTRIES =
