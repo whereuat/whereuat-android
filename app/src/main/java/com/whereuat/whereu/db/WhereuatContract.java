@@ -7,6 +7,9 @@ import android.provider.BaseColumns;
 import android.util.Log;
 import android.util.Pair;
 
+import com.whereuat.whereu.db.entry.ContactEntry;
+import com.whereuat.whereu.db.entry.KeyLocationEntry;
+
 import java.security.Key;
 
 /**
@@ -16,20 +19,6 @@ public final class WhereuatContract {
     private static final String TAG = "WuaContract";
 
     public WhereuatContract() {}
-
-    public static abstract class ContactEntry implements BaseColumns {
-        public static final String TABLE_NAME = "contacts";
-        public static final String COLUMN_NAME_NAME = "name";
-        public static final String COLUMN_NAME_PHONE = "phone";
-        public static final String COLUMN_NAME_AUTOSHARE = "autoshare";
-    }
-
-    public static abstract class KeyLocationEntry implements BaseColumns {
-        public static final String TABLE_NAME = "key_locations";
-        public static final String COLUMN_NAME_NAME = "name";
-        public static final String COLUMN_NAME_LATITUDE = "lat";
-        public static final String COLUMN_NAME_LONGITUDE = "lng";
-    }
 
     @SafeVarargs
     public static String createTable(String table_name, Pair<String, String>... columns) {
