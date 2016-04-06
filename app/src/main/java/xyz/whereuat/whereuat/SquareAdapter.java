@@ -75,9 +75,9 @@ public class SquareAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final ViewFlipper flipper;
         if (convertView == null) {
-            flipper = (ViewFlipper) inflater.inflate(xyz.whereuat.whereuat.R.layout.grid_item_container, null);
-            setupFront(flipper.findViewById(xyz.whereuat.whereuat.R.id.front_view), vals[position]);
-            setupBack(flipper.findViewById(xyz.whereuat.whereuat.R.id.back_view), vals[position]);
+            flipper = (ViewFlipper) inflater.inflate(R.layout.grid_item_container, null);
+            setupFront(flipper.findViewById(R.id.front_view), vals[position]);
+            setupBack(flipper.findViewById(R.id.back_view), vals[position]);
 
             int ideal_size = calculateIdealSize();
             flipper.setLayoutParams(new GridView.LayoutParams(ideal_size, ideal_size));
@@ -105,25 +105,25 @@ public class SquareAdapter extends BaseAdapter {
     private void setupFront(View v, String name) {
         v.setBackgroundColor(generateRandomColor());
         // TODO: Only here for example. Remove once mock data is in the DB and functional.
-        AutoShareStar star = (AutoShareStar) v.findViewById(xyz.whereuat.whereuat.R.id.auto_share_status);
+        AutoShareStar star = (AutoShareStar) v.findViewById(R.id.auto_share_status);
         if (name.length()%2 == 0)
             star.setVisibility(View.INVISIBLE);
 
         // Set up the initials TextView
-        ((TextView) v.findViewById(xyz.whereuat.whereuat.R.id.front_view_initials)).setText(getInitials(name));
+        ((TextView) v.findViewById(R.id.front_view_initials)).setText(getInitials(name));
 
         // Set up the fullname TextView
-        ((TextView) v.findViewById(xyz.whereuat.whereuat.R.id.front_view_fullname)).setText(name);
+        ((TextView) v.findViewById(R.id.front_view_fullname)).setText(name);
     }
 
     private void setupBack(View v, String name) {
         // TODO: Only here for example. Remove once mock data is in the DB and functional.
-        AutoShareStar star = (AutoShareStar) v.findViewById(xyz.whereuat.whereuat.R.id.auto_share_button);
+        AutoShareStar star = (AutoShareStar) v.findViewById(R.id.auto_share_button);
         if (name.length()%2 == 0)
             star.toggleFilled();
 
         // Set up the fullname TextView
-        ((TextView) v.findViewById(xyz.whereuat.whereuat.R.id.back_view_fullname)).setText(name);
+        ((TextView) v.findViewById(R.id.back_view_fullname)).setText(name);
     }
 
     // TODO: Flesh this function out once contacts are being pulled from the DB.

@@ -33,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(xyz.whereuat.whereuat.R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
-        GridView gridview = (GridView)findViewById(xyz.whereuat.whereuat.R.id.contact_gridview);
+        GridView gridview = (GridView)findViewById(R.id.contact_gridview);
         gridview.setAdapter(new SquareAdapter(this));
 
         String location_permission = Manifest.permission.ACCESS_FINE_LOCATION;

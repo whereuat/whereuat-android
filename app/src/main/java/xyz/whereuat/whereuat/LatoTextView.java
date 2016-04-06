@@ -18,8 +18,8 @@ public class LatoTextView extends TextView {
     public LatoTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         Typeface tf;
-        TypedArray ta = context.obtainStyledAttributes(attrs, xyz.whereuat.whereuat.R.styleable.LatoTextView);
-        switch (ta.getInt(xyz.whereuat.whereuat.R.styleable.LatoTextView_lato_font, 0)) {
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.LatoTextView);
+        switch (ta.getInt(R.styleable.LatoTextView_lato_font, 0)) {
             case BOLD:
                 tf = Typeface.createFromAsset(context.getAssets(), "Lato-Bold.ttf");
                 break;

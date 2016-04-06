@@ -36,12 +36,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(xyz.whereuat.whereuat.R.layout.activity_login);
+        setContentView(R.layout.activity_login);
         mPrefs = new PreferenceController(this);
-        mPhoneEdit = (EditText) findViewById(xyz.whereuat.whereuat.R.id.phone_number_input);
-        mVerifyCode = (EditText) findViewById(xyz.whereuat.whereuat.R.id.verification_code_input);
-        mAccountRequestSection = (RelativeLayout) findViewById(xyz.whereuat.whereuat.R.id.account_request_section);
-        mAccountCreateSection = (RelativeLayout) findViewById(xyz.whereuat.whereuat.R.id.account_create_section);
+        mPhoneEdit = (EditText) findViewById(R.id.phone_number_input);
+        mVerifyCode = (EditText) findViewById(R.id.verification_code_input);
+        mAccountRequestSection = (RelativeLayout) findViewById(R.id.account_request_section);
+        mAccountCreateSection = (RelativeLayout) findViewById(R.id.account_create_section);
         mHttpReqHandler = new HttpRequestHandler(this);
 
         mAccountNewFilter = new IntentFilter(Constants.ACCOUNT_NEW_BROADCAST);
