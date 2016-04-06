@@ -18,8 +18,8 @@ public class Constants {
     public static final String TOKEN_EXTRA = "TOKEN";
 
     public static final String ACCOUNT_REQUEST_BROADCAST =
-            "com.whereuat.whereu.ACCOUNT_REQUEST_BROADCAST";
-    public static final String ACCOUNT_NEW_BROADCAST = "com.whereuat.whereu.ACCOUNT_NEW_BROADCAST";
-    public static final String TOKEN_BROADCAST = "com.whereuat.whereu.TOKEN_BROADCAST";
-    public static final String LOCATION_BROADCAST = "com.whereuat.whereu.LOCATION_BROADCAST";
+            "xyz.whereuat.whereuat.ACCOUNT_REQUEST_BROADCAST";
+    public static final String ACCOUNT_NEW_BROADCAST = "xyz.whereuat.whereuat.ACCOUNT_NEW_BROADCAST";
+    public static final String TOKEN_BROADCAST = "xyz.whereuat.whereuat.TOKEN_BROADCAST";
+    public static final String LOCATION_BROADCAST = "xyz.whereuat.whereu.LOCATION_BROADCAST";
 }

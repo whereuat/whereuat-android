@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme" >
         <service android:name=".LocationProviderService" />
         <activity
-            android:name="xyz.whereuat.whereuat.RouterActivity"
+            android:name=".RouterActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >

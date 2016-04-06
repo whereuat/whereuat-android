@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int req_code, int result_code, Intent data) {
         super.onActivityResult(req_code, result_code, data);
-        ContactRetriever con = new ContactRetriever(req_code,result_code, data, this);
+        ContactRetriever con = new ContactRetriever(req_code, result_code, data, this);
 
         ContentValues values = new ContentValues();
         values.put(ContactEntry.COLUMN_NAME, con.getContactName());

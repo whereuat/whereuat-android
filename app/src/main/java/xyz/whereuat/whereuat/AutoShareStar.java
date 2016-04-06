@@ -22,12 +22,12 @@ public class AutoShareStar extends View {
 
     public AutoShareStar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray ta = context.obtainStyledAttributes(attrs, xyz.whereuat.whereuat.R.styleable.AutoShareStar);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AutoShareStar);
         try {
-            mColor = ta.getColor(xyz.whereuat.whereuat.R.styleable.AutoShareStar_draw_color,
-                                 ContextCompat.getColor(context, xyz.whereuat.whereuat.R.color.offWhite));
-            mIsFilled = ta.getBoolean(xyz.whereuat.whereuat.R.styleable.AutoShareStar_is_filled, true);
-            mIsClickable = ta.getBoolean(xyz.whereuat.whereuat.R.styleable.AutoShareStar_is_clickable, false);
+            mColor = ta.getColor(R.styleable.AutoShareStar_draw_color,
+                                 ContextCompat.getColor(context, R.color.offWhite));
+            mIsFilled = ta.getBoolean(R.styleable.AutoShareStar_is_filled, true);
+            mIsClickable = ta.getBoolean(R.styleable.AutoShareStar_is_clickable, false);
         } finally {
             ta.recycle();
         }
