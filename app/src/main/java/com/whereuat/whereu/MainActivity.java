@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "permission not granted :(");
                 }
+                break;
             }
             case PERMISSIONS_REQUEST_READ_CONTACTS: {
                 if (grant_results[0] == PackageManager.PERMISSION_GRANTED) {
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "Until you grant the permission, we cannot display the names", Toast.LENGTH_SHORT).show();
                 }
+                break;
             }
         }
     }
