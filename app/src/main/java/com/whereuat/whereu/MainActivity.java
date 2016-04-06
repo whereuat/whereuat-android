@@ -15,12 +15,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.GridView;
 import android.widget.Toast;
+import android.os.Build;
+import android.provider.ContactsContract;
+import android.view.View;
 
 
 public class MainActivity extends AppCompatActivity {
     private IntentFilter mLocationFilter;
     private LocationReceiver mLocationReceiver;
     private final String TAG = "MainActivity";
+
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +88,15 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.d(TAG, "permission not granted :(");
                 }
-
+            }
+            case PERMISSIONS_REQUEST_READ_CONTACTS: {
+                if (grant_results[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission is granted
+                    Intent intent= new Intent(Intent.ACTION_PICK,  ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(intent, 1);
+                } else {
+                    Toast.makeText(this, "Until you grant the permission, we cannot display the names", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -95,6 +108,24 @@ public class MainActivity extends AppCompatActivity {
             String text = String.format("Lat: %.5f, Lon: %.5f", lat, lon);
             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void addContact(View view){
+        // Check the SDK version and whether the permission is already granted or not.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+            startActivityForResult(intent, 1);
+        }
+    }
+
+    // TODO: get contact name and phone number from the ContractRetriever object.
+    // Use this information to add a new contact to the database.
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+        ContactRetriever con = new ContactRetriever(reqCode,resultCode, data, this.getApplicationContext());
     }
 }
 
