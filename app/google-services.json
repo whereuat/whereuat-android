@@ -8,10 +8,10 @@
     {
       "client_info": {
         "mobilesdk_app_id": "1:890060835415:android:de8ef74a68a77daf",
-        "client_id": "android:com.whereuat.whereu",
+        "client_id": "android:xyz.whereuat.whereuat",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "com.whereuat.whereu",
+          "package_name": "xyz.whereuat.whereuat",
           "certificate_hash": []
         }
       },

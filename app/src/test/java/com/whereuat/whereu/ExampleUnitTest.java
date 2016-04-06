@@ -1,4 +1,4 @@
-package com.whereuat.whereu;
+package xyz.whereuat.whereuat;
 
 import org.junit.Test;
 

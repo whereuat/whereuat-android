@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="@dimen/spacing_margin" >
-        <com.whereuat.whereu.AutoShareStar
+        <xyz.whereuat.whereuat.AutoShareStar
             android:id="@+id/auto_share_status"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
@@ -18,7 +18,7 @@
             android:layout_width="@dimen/auto_share_star_width"
             app:draw_color="@color/offWhite"
             app:is_clickable="false" />
-        <com.whereuat.whereu.LatoTextView
+        <xyz.whereuat.whereuat.LatoTextView
             android:id="@+id/front_view_initials"
             app:lato_font="semibold"
             android:layout_centerInParent="true"
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:textColor="@color/offWhite"
             android:textSize="@dimen/front_initials_font_size" />
-        <com.whereuat.whereu.LatoTextView
+        <xyz.whereuat.whereuat.LatoTextView
             android:id="@+id/front_view_fullname"
             android:ellipsize="end"
             app:lato_font="regular"
@@ -45,7 +45,7 @@
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:padding="@dimen/spacing_margin">
-        <com.whereuat.whereu.LatoTextView
+        <xyz.whereuat.whereuat.LatoTextView
             android:id="@+id/back_view_fullname"
             app:lato_font="bold"
             android:layout_alignParentTop="true"
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_centerInParent="true">
-            <com.whereuat.whereu.LatoTextView
+            <xyz.whereuat.whereuat.LatoTextView
                 android:id="@+id/auto_share_text"
                 app:lato_font="regular"
                 android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
                 android:text="Auto Share?"
                 android:textColor="@color/darkGray"
                 android:textSize="18sp" />
-            <com.whereuat.whereu.AutoShareStar
+            <xyz.whereuat.whereuat.AutoShareStar
                 android:id="@+id/auto_share_button"
                 android:layout_width="@dimen/auto_share_star_width"
                 android:layout_height="@dimen/auto_share_star_height"
@@ -88,7 +88,7 @@
             android:gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true">
-            <com.whereuat.whereu.LatoTextView
+            <xyz.whereuat.whereuat.LatoTextView
                 app:lato_font="regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                 android:textColor="@color/darkGray"
                 android:textSize="18sp"
                 android:textAlignment="center" />
-            <com.whereuat.whereu.LatoTextView
+            <xyz.whereuat.whereuat.LatoTextView
                 android:id="@+id/requested_text"
                 app:lato_font="regular"
                 android:layout_width="wrap_content"
