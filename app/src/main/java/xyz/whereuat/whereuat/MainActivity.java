@@ -1,6 +1,7 @@
 package xyz.whereuat.whereuat;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,7 +28,10 @@ import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
 public class MainActivity extends AppCompatActivity {
     private IntentFilter mLocationFilter;
+    private IntentFilter mAtResponseInitFilter;
     private LocationReceiver mLocationReceiver;
+    private AtResponseInitiateReceiver mAtResponseInitReceiver;
+
     private final String TAG = "MainActivity";
 
     @Override
@@ -61,12 +65,20 @@ public class MainActivity extends AppCompatActivity {
         mLocationReceiver = new LocationReceiver();
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mLocationReceiver, mLocationFilter);
+
+        mAtResponseInitFilter = new IntentFilter(Constants.AT_RESPONSE_INITIATE_BROADCAST);
+        mAtResponseInitReceiver = new AtResponseInitiateReceiver();
+        registerReceiver(mAtResponseInitReceiver, mAtResponseInitFilter);
     }
 
     @Override
     protected void onPause() {
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
+        } catch (IllegalArgumentException e) {}
+
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mAtResponseInitReceiver);
         } catch (IllegalArgumentException e) {}
         super.onPause();
     }
@@ -76,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             LocalBroadcastManager.getInstance(this)
                     .registerReceiver(mLocationReceiver, mLocationFilter);
+        } catch (IllegalArgumentException e) {}
+
+        try {
+            LocalBroadcastManager.getInstance(this)
+                    .registerReceiver(mAtResponseInitReceiver, mAtResponseInitFilter);
         } catch (IllegalArgumentException e) {}
         super.onResume();
     }
@@ -115,6 +132,17 @@ public class MainActivity extends AppCompatActivity {
             double lon = intent.getDoubleExtra(Constants.CURR_LONGITUDE_EXTRA, -1.0);
             String text = String.format("Lat: %.5f, Lon: %.5f", lat, lon);
             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public class AtResponseInitiateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            NotificationManager nm = (NotificationManager) getSystemService(
+                    Context.NOTIFICATION_SERVICE);
+            nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
+            // TODO: Instead of toasting, send an at response.
+            Toast.makeText(context, "Here", Toast.LENGTH_SHORT).show();
         }
     }
 

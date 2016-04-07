@@ -54,6 +54,10 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".MainActivity$AtResponseInitiateReceiver">
+        </receiver>
+
         <service
             android:name=".gcm.WuaGcmListenerService"
             android:exported="false" >
