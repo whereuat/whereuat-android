@@ -24,15 +24,16 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import java.util.Random;
+
+import xyz.whereuat.whereuat.Constants;
 import xyz.whereuat.whereuat.MainActivity;
 import xyz.whereuat.whereuat.R;
 
 public class WuaGcmListenerService extends GcmListenerService {
-
     private static final String TAG = "WuaGcmListenerService";
 
     /**
@@ -42,35 +43,10 @@ public class WuaGcmListenerService extends GcmListenerService {
      * @param data Data bundle containing message data as key/value pairs.
      *             For Set of keys use data.keySet().
      */
-    // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-        Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
-
-        if (from.startsWith("/topics/")) {
-            // message received from some topic.
-        } else {
-            // normal downstream message.
-        }
-
-        // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
-
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
-        sendNotification(message);
-        // [END_EXCLUDE]
+        sendNotification(String.format("%s: whereu@?", data.getString("from-#")));
     }
-    // [END receive_message]
 
     /**
      * Create and show a simple notification containing the received GCM message.
@@ -78,23 +54,41 @@ public class WuaGcmListenerService extends GcmListenerService {
      * @param message GCM message received.
      */
     private void sendNotification(String message) {
+        // Generate a random integer so the notification can be uniquely identified later.
+        int notification_id = (new Random()).nextInt(Integer.MAX_VALUE);
+
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pending_intent = PendingIntent.getActivity(this, notification_id, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+        Uri sound_uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notification_builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("GCM Message")
+                .setContentTitle("whereu@")
                 .setContentText(message)
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setSound(sound_uri)
+                .addAction(createResponseAction(notification_id))
+                .setContentIntent(pending_intent);
 
-        NotificationManager notificationManager =
+        NotificationManager notification_manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notification_manager.notify(notification_id, notification_builder.build());
+    }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    private NotificationCompat.Action createResponseAction(int notification_id) {
+        Intent intent = new Intent(Constants.AT_RESPOND_BROADCAST);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(Constants.NOTIFICATION_ID_EXTRA, notification_id);
+
+        PendingIntent pending_intent = PendingIntent.getBroadcast(this, notification_id, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Action.Builder action_builder =
+                new NotificationCompat.Action.Builder(R.drawable.ic_stat_ic_notification, "At",
+                        pending_intent);
+
+        return action_builder.build();
     }
 }
