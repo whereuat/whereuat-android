@@ -19,18 +19,23 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.GridView;
 import android.widget.Toast;
+
+import com.github.clans.fab.FloatingActionMenu;
 
 import xyz.whereuat.whereuat.db.DbTask;
 import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnScrollListener {
     private IntentFilter mLocationFilter;
     private IntentFilter mAtResponseInitFilter;
     private LocationReceiver mLocationReceiver;
     private AtResponseInitiateReceiver mAtResponseInitReceiver;
+    private FloatingActionMenu mMenu;
 
     private final String TAG = "MainActivity";
 
@@ -39,8 +44,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mMenu = (FloatingActionMenu) findViewById(R.id.menu);
+
         GridView gridview = (GridView)findViewById(R.id.contact_gridview);
         gridview.setAdapter(new SquareAdapter(this));
+        gridview.setOnScrollListener(this);
 
         String location_permission = Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -73,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        mMenu.close(false);
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
         } catch (IllegalArgumentException e) {}
@@ -126,6 +135,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onScroll(AbsListView view, int first_visible_item, int visible_item_count,
+                         int total_item_count) {
+        mMenu.close(true);
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scroll_state) { }
+
     private class LocationReceiver extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
             double lat = intent.getDoubleExtra(Constants.CURR_LATITUDE_EXTRA, -1.0);
@@ -147,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addContact(View view){
+        mMenu.close(true);
         // Check the SDK version and whether the permission is already granted or not.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int contacts_permission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
@@ -159,6 +178,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         }
+    }
+
+    public void addKeyLoc(View view) {
+        mMenu.close(true);
     }
 
     @Override
