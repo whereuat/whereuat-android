@@ -30,20 +30,22 @@ public class LocationProviderService extends Service implements OnConnectionFail
     public int onStartCommand(Intent intent, int flags, int start_id) {
         Location location;
         // Only get locations if the service doesn't need to be started.
-        if (!intent.getBooleanExtra(Constants.SHOULD_START_LOCATION_SERVICE, false)) {
-            try {
-                location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                double lon = location.getLongitude();
-                double lat = location.getLatitude();
-                sendLocationRequestBroadcast(lon, lat);
-            } catch (SecurityException e) {
-                String text = "You need give location permissions to use whereu@.";
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            } catch (NullPointerException e) {
-                Log.d(TAG, "null loc");
-                // the location was probably null.
+        try {
+            if (!intent.getBooleanExtra(Constants.SHOULD_START_LOCATION_SERVICE, false)) {
+                try {
+                    location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                    double lon = location.getLongitude();
+                    double lat = location.getLatitude();
+                    sendLocationRequestBroadcast(lon, lat);
+                } catch (SecurityException e) {
+                    String text = "You need give location permissions to use whereu@.";
+                    Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "null loc");
+                    // the location was probably null.
+                }
             }
-        }
+        } catch (NullPointerException e) { }
         return START_STICKY;
     }
 
