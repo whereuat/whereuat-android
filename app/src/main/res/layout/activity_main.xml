@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:onClick="addContact"
-        android:src="@android:drawable/ic_input_add"
-        android:visibility="visible"
-        android:tint="@color/offWhite"
-        app:backgroundTint="@color/coolRed" />
+    android:layout_height="match_parent">
 
     <GridView
         android:id="@+id/contact_gridview"
@@ -24,5 +12,36 @@
         android:horizontalSpacing="0dp"
         android:stretchMode="columnWidth"
         android:numColumns="2"
-        android:layout_gravity="center_vertical|right" />
+        android:layout_gravity="center_vertical|end" />
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_menu"
+        fab:menu_fab_size="normal"
+        fab:menu_colorNormal="@color/coolRed">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_add_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="addContact"
+            android:src="@drawable/ic_add_contact"
+            fab:fab_size="mini"
+            fab:fab_colorNormal="@color/coolRed"
+            fab:fab_label="Add Contact"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_add_key_loc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="addKeyLoc"
+            android:src="@drawable/ic_add_location"
+            fab:fab_size="mini"
+            fab:fab_colorNormal="@color/coolRed"
+            fab:fab_label="Add Key Location"/>
+    </com.github.clans.fab.FloatingActionMenu>
 </FrameLayout>
