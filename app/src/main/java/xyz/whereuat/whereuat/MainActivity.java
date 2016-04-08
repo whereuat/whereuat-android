@@ -1,6 +1,7 @@
 package xyz.whereuat.whereuat;
 
 import android.Manifest;
+import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -182,6 +183,10 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
 
     public void addKeyLoc(View view) {
         mMenu.close(true);
+
+        FragmentManager fm = getFragmentManager();
+        KeyLocDialogFragment key_loc_dialog = new KeyLocDialogFragment();
+        key_loc_dialog.show(fm, TAG);
     }
 
     @Override
