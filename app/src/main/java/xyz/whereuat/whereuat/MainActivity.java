@@ -166,22 +166,29 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(req_code, result_code, data);
         ContactRetriever con = new ContactRetriever(req_code, result_code, data, this);
 
-        ContentValues values = new ContentValues();
-        values.put(ContactEntry.COLUMN_NAME, con.getContactName());
-        values.put(ContactEntry.COLUMN_PHONE, con.getPhoneNumber());
-        values.put(ContactEntry.COLUMN_AUTOSHARE, false);
+        String name = con.getContactName();
+        String phone = con.getPhoneNumber();
+        if (name != null && phone != null){
+            ContentValues values = new ContentValues();
+            values.put(ContactEntry.COLUMN_NAME, con.getContactName());
+            values.put(ContactEntry.COLUMN_PHONE, con.getPhoneNumber());
+            values.put(ContactEntry.COLUMN_AUTOSHARE, false);
 
-        InsertCommand cmd = new InsertCommand(this, ContactEntry.TABLE_NAME, null, values);
-        new DbTask(new DbTask.AsyncResponse() {
-            @Override
-            public void processFinish(Object result) {
-                if ((Long)result != -1) {
-                    Log.d(TAG, "Successfully inserted contact");
-                } else {
-                    Log.d(TAG, "Some weird things happened when inserting contact into DB");
+            InsertCommand cmd = new InsertCommand(this, ContactEntry.TABLE_NAME, null, values);
+            new DbTask(new DbTask.AsyncResponse() {
+                @Override
+                public void processFinish(Object result) {
+                    if ((Long) result != -1) {
+                        Log.d(TAG, "Successfully inserted contact");
+                    } else {
+                        Log.d(TAG, "Some weird things happened when inserting contact into DB");
+                    }
                 }
-            }
-        }).execute(cmd);
+            }).execute(cmd);
+        } else {
+            Log.d(TAG, String.format("name: %s, phone: %s", name, phone));
+            Toast.makeText(this, "Couldn't add that contact", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

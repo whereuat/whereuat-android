@@ -25,4 +25,6 @@ public class Constants {
             "xyz.whereuat.whereuat.AT_RESPONSE_INITIATE_BROADCAST";
     public static final String TOKEN_BROADCAST = "xyz.whereuat.whereuat.TOKEN_BROADCAST";
     public static final String LOCATION_BROADCAST = "xyz.whereuat.whereu.LOCATION_BROADCAST";
+
+    public static final String DEFAULT_PHONE_REGION = "US";
 }
