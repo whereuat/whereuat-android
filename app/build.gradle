@@ -27,6 +27,7 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
+    compile 'com.googlecode.libphonenumber:libphonenumber:7.3.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -5,8 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds;
+import android.provider.ContactsContract.Contacts;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.util.Log;
+
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 /**
  * Created by whites5 on 3/22/16.
@@ -17,9 +22,11 @@ public class ContactRetriever {
     private String mContactID;
     private String mContactName;
     private static final String[] PROJECTION = {
-        ContactsContract.Contacts._ID,
-        ContactsContract.Contacts.DISPLAY_NAME
+        Contacts._ID,
+        Contacts.DISPLAY_NAME
     };
+
+    private static final String TAG = "ContactRtrv";
 
 
     public ContactRetriever(int reqCode, int resultCode, Intent data, Context con) {
@@ -29,31 +36,55 @@ public class ContactRetriever {
                 if (resultCode == Activity.RESULT_OK) {
                     Uri contactData = data.getData();
 
-                    Cursor c =  con.getContentResolver().query(contactData, PROJECTION, null, null, null);
-                    if (c.moveToFirst()) {
-                        mContactID = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
-                        mContactName = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    Cursor c =  con.getContentResolver().query(contactData, PROJECTION, null, null,
+                            null);
+                    if (c != null) {
+                        if (c.moveToFirst()) {
+                            mContactID = c.getString(c.getColumnIndex(Contacts._ID));
+                            mContactName = c.getString(c.getColumnIndex(Contacts.DISPLAY_NAME));
+                        }
+                        c.close();
                     }
-                    c.close();
 
                     String contact_query = String.format("%s = ? AND %s = %s",
-                            CommonDataKinds.Phone.CONTACT_ID,
-                            CommonDataKinds.Phone.TYPE,
-                            CommonDataKinds.Phone.TYPE_MOBILE);
+                            Phone.CONTACT_ID,
+                            Phone.TYPE,
+                            Phone.TYPE_MOBILE);
 
-                    Cursor cursorPhone = con.getContentResolver().query(CommonDataKinds.Phone.CONTENT_URI,
-                            new String[]{CommonDataKinds.Phone.NUMBER},
+                    Cursor cursorPhone = con.getContentResolver().query(Phone.CONTENT_URI,
+                            new String[]{Phone.NUMBER},
                             contact_query,
                             new String[]{mContactID},
                             null);
 
-                    if (cursorPhone.moveToFirst()) {
-                        mPhoneNum = cursorPhone.getString(cursorPhone.getColumnIndex(CommonDataKinds.Phone.NUMBER));
-                    }
+                    if (cursorPhone != null) {
+                        if (cursorPhone.moveToFirst()) {
+                            int col_index = cursorPhone.getColumnIndex(Phone.NUMBER);
+                            String raw_phone_number = cursorPhone.getString(col_index);
 
-                    cursorPhone.close();
+                            mPhoneNum = convertToE164(raw_phone_number);
+                        }
+                        cursorPhone.close();
+                    }
                 }
                 break;
+        }
+    }
+
+    private String convertToE164(String raw_phone_number) {
+        PhoneNumberUtil phone_util = PhoneNumberUtil.getInstance();
+        try {
+            PhoneNumber phone_proto = phone_util.parse(raw_phone_number,
+                    Constants.DEFAULT_PHONE_REGION);
+            if (phone_util.isValidNumber(phone_proto)) {
+                return phone_util.format(phone_proto, PhoneNumberUtil.PhoneNumberFormat.E164);
+            } else {
+                Log.d(TAG, "Invalid number");
+                return null;
+            }
+        } catch (NumberParseException e) {
+            Log.d(TAG, "Error parsing phone number");
+            return null;
         }
     }
 
