@@ -78,7 +78,7 @@ public class WuaGcmListenerService extends GcmListenerService {
     }
 
     private NotificationCompat.Action createResponseAction(int notification_id) {
-        Intent intent = new Intent(Constants.AT_RESPOND_BROADCAST);
+        Intent intent = new Intent(Constants.AT_RESPONSE_INITIATE_BROADCAST);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(Constants.NOTIFICATION_ID_EXTRA, notification_id);
 

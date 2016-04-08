@@ -28,9 +28,9 @@ import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
 public class MainActivity extends AppCompatActivity {
     private IntentFilter mLocationFilter;
-    private IntentFilter mAtRespondFilter;
+    private IntentFilter mAtResponseInitFilter;
     private LocationReceiver mLocationReceiver;
-    private AtRespondReceiver mAtRespondReceiver;
+    private AtResponseInitiateReceiver mAtResponseInitReceiver;
 
     private final String TAG = "MainActivity";
 
@@ -66,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mLocationReceiver, mLocationFilter);
 
-        mAtRespondFilter = new IntentFilter(Constants.AT_RESPOND_BROADCAST);
-        mAtRespondReceiver = new AtRespondReceiver();
-        registerReceiver(mAtRespondReceiver, mAtRespondFilter);
+        mAtResponseInitFilter = new IntentFilter(Constants.AT_RESPONSE_INITIATE_BROADCAST);
+        mAtResponseInitReceiver = new AtResponseInitiateReceiver();
+        registerReceiver(mAtResponseInitReceiver, mAtResponseInitFilter);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalArgumentException e) {}
 
         try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mAtRespondReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mAtResponseInitReceiver);
         } catch (IllegalArgumentException e) {}
         super.onPause();
     }
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             LocalBroadcastManager.getInstance(this)
-                    .registerReceiver(mAtRespondReceiver, mAtRespondFilter);
+                    .registerReceiver(mAtResponseInitReceiver, mAtResponseInitFilter);
         } catch (IllegalArgumentException e) {}
         super.onResume();
     }
@@ -135,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class AtRespondReceiver extends BroadcastReceiver {
+    public class AtResponseInitiateReceiver extends BroadcastReceiver {
+        @Override
         public void onReceive(Context context, Intent intent) {
             NotificationManager nm = (NotificationManager) getSystemService(
                     Context.NOTIFICATION_SERVICE);
@@ -165,22 +166,29 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(req_code, result_code, data);
         ContactRetriever con = new ContactRetriever(req_code, result_code, data, this);
 
-        ContentValues values = new ContentValues();
-        values.put(ContactEntry.COLUMN_NAME, con.getContactName());
-        values.put(ContactEntry.COLUMN_PHONE, con.getPhoneNumber());
-        values.put(ContactEntry.COLUMN_AUTOSHARE, false);
+        String name = con.getContactName();
+        String phone = con.getPhoneNumber();
+        if (name != null && phone != null){
+            ContentValues values = new ContentValues();
+            values.put(ContactEntry.COLUMN_NAME, con.getContactName());
+            values.put(ContactEntry.COLUMN_PHONE, con.getPhoneNumber());
+            values.put(ContactEntry.COLUMN_AUTOSHARE, false);
 
-        InsertCommand cmd = new InsertCommand(this, ContactEntry.TABLE_NAME, null, values);
-        new DbTask(new DbTask.AsyncResponse() {
-            @Override
-            public void processFinish(Object result) {
-                if ((Long)result != -1) {
-                    Log.d(TAG, "Successfully inserted contact");
-                } else {
-                    Log.d(TAG, "Some weird things happened when inserting contact into DB");
+            InsertCommand cmd = new InsertCommand(this, ContactEntry.TABLE_NAME, null, values);
+            new DbTask(new DbTask.AsyncResponse() {
+                @Override
+                public void processFinish(Object result) {
+                    if ((Long) result != -1) {
+                        Log.d(TAG, "Successfully inserted contact");
+                    } else {
+                        Log.d(TAG, "Some weird things happened when inserting contact into DB");
+                    }
                 }
-            }
-        }).execute(cmd);
+            }).execute(cmd);
+        } else {
+            Log.d(TAG, String.format("name: %s, phone: %s", name, phone));
+            Toast.makeText(this, "Couldn't add that contact", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

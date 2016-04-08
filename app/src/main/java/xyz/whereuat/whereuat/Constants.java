@@ -21,7 +21,10 @@ public class Constants {
     public static final String ACCOUNT_REQUEST_BROADCAST =
             "xyz.whereuat.whereuat.ACCOUNT_REQUEST_BROADCAST";
     public static final String ACCOUNT_NEW_BROADCAST = "xyz.whereuat.whereuat.ACCOUNT_NEW_BROADCAST";
-    public static final String AT_RESPOND_BROADCAST = "xyz.whereuat.whereuat.AT_RESPOND_BROADCAST";
+    public static final String AT_RESPONSE_INITIATE_BROADCAST =
+            "xyz.whereuat.whereuat.AT_RESPONSE_INITIATE_BROADCAST";
     public static final String TOKEN_BROADCAST = "xyz.whereuat.whereuat.TOKEN_BROADCAST";
     public static final String LOCATION_BROADCAST = "xyz.whereuat.whereu.LOCATION_BROADCAST";
+
+    public static final String DEFAULT_PHONE_REGION = "US";
 }
