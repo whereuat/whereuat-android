@@ -45,15 +45,15 @@ public class WuaGcmListenerService extends GcmListenerService {
      */
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        sendNotification(String.format("%s: whereu@?", data.getString("from-#")));
+        sendNotification(data.getString("from-#"));
     }
 
     /**
      * Create and show a simple notification containing the received GCM message.
      *
-     * @param message GCM message received.
+     * @param from_phone The phone that sent the message.
      */
-    private void sendNotification(String message) {
+    private void sendNotification(String from_phone) {
         // Generate a random integer so the notification can be uniquely identified later.
         int notification_id = (new Random()).nextInt(Integer.MAX_VALUE);
 
@@ -62,6 +62,7 @@ public class WuaGcmListenerService extends GcmListenerService {
         PendingIntent pending_intent = PendingIntent.getActivity(this, notification_id, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
+        String message = String.format("%s: whereu@?", from_phone);
         Uri sound_uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notification_builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
@@ -69,7 +70,7 @@ public class WuaGcmListenerService extends GcmListenerService {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(sound_uri)
-                .addAction(createResponseAction(notification_id))
+                .addAction(createResponseAction(notification_id, from_phone))
                 .setContentIntent(pending_intent);
 
         NotificationManager notification_manager =
@@ -77,10 +78,11 @@ public class WuaGcmListenerService extends GcmListenerService {
         notification_manager.notify(notification_id, notification_builder.build());
     }
 
-    private NotificationCompat.Action createResponseAction(int notification_id) {
+    private NotificationCompat.Action createResponseAction(int notification_id, String to_phone) {
         Intent intent = new Intent(Constants.AT_RESPONSE_INITIATE_BROADCAST);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(Constants.NOTIFICATION_ID_EXTRA, notification_id);
+        intent.putExtra(Constants.TO_PHONE_EXTRA, to_phone);
 
         PendingIntent pending_intent = PendingIntent.getBroadcast(this, notification_id, intent,
                 PendingIntent.FLAG_ONE_SHOT);
