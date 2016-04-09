@@ -6,7 +6,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,25 +35,27 @@ public class LocationProviderService extends Service implements OnConnectionFail
                     location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
                     double lon = location.getLongitude();
                     double lat = location.getLatitude();
-                    sendLocationRequestBroadcast(lon, lat);
+                    // TODO: I hate this. We need to pass this extra through here so we can catch
+                    // the broadcast later and know who to send our response to. That's terrible and
+                    // needs fixed.
+                    String to_phone = intent.getStringExtra(Constants.TO_PHONE_EXTRA);
+                    sendLocationRequestBroadcast(lon, lat, to_phone);
                 } catch (SecurityException e) {
                     String text = "You need give location permissions to use whereu@.";
                     Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "null loc");
-                    // the location was probably null.
-                }
+                } catch (NullPointerException e) { Log.d(TAG, "null"); }
             }
         } catch (NullPointerException e) { }
         return START_STICKY;
     }
 
-    private void sendLocationRequestBroadcast(double lon, double lat) {
+    private void sendLocationRequestBroadcast(double lon, double lat, String to_phone) {
         Intent result = new Intent();
         result.putExtra(Constants.CURR_LONGITUDE_EXTRA, lon);
         result.putExtra(Constants.CURR_LATITUDE_EXTRA, lat);
+        result.putExtra(Constants.TO_PHONE_EXTRA, to_phone);
         result.setAction(Constants.LOCATION_BROADCAST);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(result);
+        sendBroadcast(result);
     }
 
     @Override

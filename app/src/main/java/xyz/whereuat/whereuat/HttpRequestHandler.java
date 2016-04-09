@@ -2,6 +2,7 @@ package xyz.whereuat.whereuat;
 
 import android.app.Activity;
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 
 import org.json.JSONObject;
@@ -22,10 +23,10 @@ public class HttpRequestHandler {
     private static final String JSON_EXTRA = "JSON";
     private static final String BROADCAST_EXTRA = "BROADCAST";
 
-    private Activity mActivity;
+    private Context mContext;
 
-    public HttpRequestHandler(Activity calling_activity) {
-        mActivity = calling_activity;
+    public HttpRequestHandler(Context context) {
+        mContext = context;
     }
 
     public boolean postAccountRequest(String phone_number) {
@@ -54,12 +55,33 @@ public class HttpRequestHandler {
         }
     }
 
+    public boolean postAtResponse(String from_phone, String to_phone, double lat, double lng) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("from", from_phone);
+            json.put("to", to_phone);
+
+            JSONObject curr_loc_json = new JSONObject();
+            curr_loc_json.put("lat", lat);
+            curr_loc_json.put("lng", lng);
+            json.put("current-location", curr_loc_json);
+
+            // TODO: Tie this into the db.
+            json.put("key-location", JSONObject.NULL);
+            post(Constants.AT_RESPONSE_ROUTE, json, Constants.AT_RESPONSE_BROADCAST);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private void post(String route, JSONObject json, String broadcast) {
-        Intent post = new Intent(mActivity, HttpPost.class);
+        Intent post = new Intent(mContext, HttpPost.class);
         post.putExtra(ROUTE_EXTRA, route);
         post.putExtra(JSON_EXTRA, json.toString());
         post.putExtra(BROADCAST_EXTRA, broadcast);
-        mActivity.startService(post);
+        mContext.startService(post);
     }
 
     /*

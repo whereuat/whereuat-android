@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -15,7 +14,6 @@ import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -31,13 +29,9 @@ import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
 public class MainActivity extends AppCompatActivity implements OnScrollListener {
-    private IntentFilter mLocationFilter;
-    private IntentFilter mAtResponseInitFilter;
-    private LocationReceiver mLocationReceiver;
-    private AtResponseInitiateReceiver mAtResponseInitReceiver;
     private FloatingActionMenu mMenu;
 
-    private final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,42 +62,12 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
         Intent intent = new Intent(this, LocationProviderService.class);
         intent.putExtra(Constants.SHOULD_START_LOCATION_SERVICE, true);
         this.startService(intent);
-
-        mLocationFilter = new IntentFilter(Constants.LOCATION_BROADCAST);
-        mLocationReceiver = new LocationReceiver();
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(mLocationReceiver, mLocationFilter);
-
-        mAtResponseInitFilter = new IntentFilter(Constants.AT_RESPONSE_INITIATE_BROADCAST);
-        mAtResponseInitReceiver = new AtResponseInitiateReceiver();
-        registerReceiver(mAtResponseInitReceiver, mAtResponseInitFilter);
     }
 
     @Override
     protected void onPause() {
         mMenu.close(false);
-        try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mLocationReceiver);
-        } catch (IllegalArgumentException e) {}
-
-        try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mAtResponseInitReceiver);
-        } catch (IllegalArgumentException e) {}
         super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        try {
-            LocalBroadcastManager.getInstance(this)
-                    .registerReceiver(mLocationReceiver, mLocationFilter);
-        } catch (IllegalArgumentException e) {}
-
-        try {
-            LocalBroadcastManager.getInstance(this)
-                    .registerReceiver(mAtResponseInitReceiver, mAtResponseInitFilter);
-        } catch (IllegalArgumentException e) {}
-        super.onResume();
     }
 
     @Override
@@ -144,23 +108,47 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
     @Override
     public void onScrollStateChanged(AbsListView view, int scroll_state) { }
 
-    private class LocationReceiver extends BroadcastReceiver {
+    public static class AtResponseInitiateReceiver extends BroadcastReceiver {
+        @Override
         public void onReceive(Context context, Intent intent) {
-            double lat = intent.getDoubleExtra(Constants.CURR_LATITUDE_EXTRA, -1.0);
-            double lon = intent.getDoubleExtra(Constants.CURR_LONGITUDE_EXTRA, -1.0);
-            String text = String.format("Lat: %.5f, Lon: %.5f", lat, lon);
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+            NotificationManager nm = (NotificationManager) context.getSystemService(
+                    Context.NOTIFICATION_SERVICE);
+            nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
+
+            Intent loc_intent = new Intent(context, LocationProviderService.class);
+            String to_phone = intent.getStringExtra(Constants.TO_PHONE_EXTRA);
+            loc_intent.putExtra(Constants.TO_PHONE_EXTRA, to_phone);
+            context.startService(loc_intent);
         }
     }
 
-    public class AtResponseInitiateReceiver extends BroadcastReceiver {
+    public static class AtResponseLocationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            NotificationManager nm = (NotificationManager) getSystemService(
-                    Context.NOTIFICATION_SERVICE);
-            nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
-            // TODO: Instead of toasting, send an at response.
-            Toast.makeText(context, "Here", Toast.LENGTH_SHORT).show();
+            double lat = intent.getDoubleExtra(Constants.CURR_LATITUDE_EXTRA, -1.0);
+            double lng = intent.getDoubleExtra(Constants.CURR_LONGITUDE_EXTRA, -1.0);
+            (new HttpRequestHandler(context)).postAtResponse(
+                    (new PreferenceController(context)).getClientPhoneNumber(),
+                    intent.getStringExtra(Constants.TO_PHONE_EXTRA), lat, lng);
+//            context.startService(new Intent(context, LocationProvider.class));
+        }
+    }
+
+    /*
+        Receives the response code from the @response POST
+     */
+    public static class AtResponseReceiver extends BroadcastReceiver {
+        String text;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getIntExtra(Constants.RESPONSE_CODE_EXTRA, 400) == 200) {
+                text = "Got a 200 from the @response POST!";
+            } else {
+                text = "Error sending the location POST " +
+                        Integer.toString(intent.getIntExtra(Constants.RESPONSE_CODE_EXTRA, 400));
+            }
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
         }
     }
 
