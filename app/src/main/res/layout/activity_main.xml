@@ -28,7 +28,7 @@
             android:id="@+id/menu_add_contact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="addContact"
+            android:onClick="addContactOnClick"
             android:src="@drawable/ic_add_contact"
             fab:fab_size="mini"
             fab:fab_colorNormal="@color/coolRed"
