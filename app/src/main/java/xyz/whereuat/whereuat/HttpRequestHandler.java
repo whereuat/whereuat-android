@@ -1,39 +1,34 @@
 package xyz.whereuat.whereuat;
 
-import android.app.Activity;
-import android.app.IntentService;
 import android.content.Context;
-import android.content.Intent;
 
 import org.json.JSONObject;
 
-import java.io.DataOutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 /**
  * Created by julius on 3/25/16.
  */
 public class HttpRequestHandler {
-    private static final int READ_TIMEOUT = 10000;
-    private static final int CONNECT_TIMEOUT = 15000;
-
-    private static final String ROUTE_EXTRA = "ROUTE";
-    private static final String JSON_EXTRA = "JSON";
-    private static final String BROADCAST_EXTRA = "BROADCAST";
-
-    private Context mContext;
+    private static RequestQueue mRequestQ;
 
     public HttpRequestHandler(Context context) {
-        mContext = context;
+        if (mRequestQ == null)
+            mRequestQ = Volley.newRequestQueue(context);
     }
 
-    public boolean postAccountRequest(String phone_number) {
+    public boolean postAccountRequest(String phone_number,
+                                      Response.Listener<String> success_listener,
+                                      Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
             json.put("phone-#", phone_number);
-            post(Constants.ACCOUNT_REQUEST_ROUTE, json, Constants.ACCOUNT_REQUEST_BROADCAST);
+            post(Constants.ACCOUNT_REQUEST_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,13 +36,15 @@ public class HttpRequestHandler {
         }
     }
 
-    public boolean postAccountNew(String phone_number, String gcm_tok, String verify_code) {
+    public boolean postAccountNew(String phone_number, String gcm_tok, String verify_code,
+                                  Response.Listener<String> success_listener,
+                                  Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
             json.put("phone-#", phone_number);
             json.put("gcm-token", gcm_tok);
             json.put("verification-code", verify_code);
-            post(Constants.ACCOUNT_NEW_ROUTE, json, Constants.ACCOUNT_NEW_BROADCAST);
+            post(Constants.ACCOUNT_NEW_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +52,9 @@ public class HttpRequestHandler {
         }
     }
 
-    public boolean postAtResponse(String from_phone, String to_phone, double lat, double lng) {
+    public boolean postAtResponse(String from_phone, String to_phone, double lat, double lng,
+                                  Response.Listener<String> success_listener,
+                                  Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
             json.put("from", from_phone);
@@ -68,7 +67,7 @@ public class HttpRequestHandler {
 
             // TODO: Tie this into the db.
             json.put("key-location", JSONObject.NULL);
-            post(Constants.AT_RESPONSE_ROUTE, json, Constants.AT_RESPONSE_BROADCAST);
+            post(Constants.AT_RESPONSE_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,56 +75,22 @@ public class HttpRequestHandler {
         }
     }
 
-    private void post(String route, JSONObject json, String broadcast) {
-        Intent post = new Intent(mContext, HttpPost.class);
-        post.putExtra(ROUTE_EXTRA, route);
-        post.putExtra(JSON_EXTRA, json.toString());
-        post.putExtra(BROADCAST_EXTRA, broadcast);
-        mContext.startService(post);
-    }
-
-    /*
-        A class for wrapping POSTs to the server in Intents
-     */
-    public static class HttpPost extends IntentService {
-        public HttpPost() {
-            super("HttpPost");
-        }
-
-        @Override
-        protected void onHandleIntent(Intent intent) {
-            String route = intent.getStringExtra(ROUTE_EXTRA);
-            String json_str = intent.getStringExtra(JSON_EXTRA);
-            String broadcast = intent.getStringExtra(BROADCAST_EXTRA);
-
-            HttpURLConnection conn = null;
-            try {
-                URL url = new URL(Constants.WHEREUAT_URL + route);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECT_TIMEOUT);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-
-                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                os.writeBytes(json_str);
-                os.close();
-
-                sendResultBroadcast(conn.getResponseCode(), broadcast);
-            } catch (Exception e) {
-                e.printStackTrace();
-                sendResultBroadcast(-1, broadcast);
-            } finally {
-                if (conn != null)
-                    conn.disconnect();
+    private void post(String route, final JSONObject json,
+                      Response.Listener<String> success_listener,
+                      Response.ErrorListener error_listener) {
+        StringRequest req = new StringRequest(Request.Method.POST, Constants.WHEREUAT_URL + route,
+                success_listener, error_listener) {
+            // We need to override these methods so we can send JSON and get a String response.
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                return json.toString().getBytes();
             }
-        }
 
-        private void sendResultBroadcast(int response_code, String broadcast) {
-            Intent result = new Intent();
-            result.putExtra(Constants.RESPONSE_CODE_EXTRA, response_code);
-            result.setAction(broadcast);
-            sendBroadcast(result);
-        }
+            @Override
+            public String getBodyContentType() {
+                return "application/json";
+            }
+        };
+        mRequestQ.add(req);
     }
 }
