@@ -4,12 +4,10 @@ import android.Manifest;
 import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -25,10 +23,6 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
-
-import xyz.whereuat.whereuat.db.DbTask;
-import xyz.whereuat.whereuat.db.command.InsertCommand;
-import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
 public class MainActivity extends AppCompatActivity implements OnScrollListener {
     private FloatingActionMenu mMenu;
@@ -89,9 +83,7 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
             case Constants.WHEREUAT_PERMISSION_REQUEST_READ_CONTACTS: {
                 if (grant_results[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission is granted
-                    Intent intent= new Intent(Intent.ACTION_PICK,
-                                              ContactsContract.Contacts.CONTENT_URI);
-                    startActivityForResult(intent, 1);
+                    showContactsPhonebook();
                 } else {
                     Toast.makeText(this,
                                    "Until you grant the permission, we cannot display the names",
@@ -148,20 +140,32 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
         }
     }
 
-    public void addContact(View view){
+    public void addContactOnClick(View view){
         mMenu.close(true);
+        if (requestContactPermissions()) {
+            showContactsPhonebook();
+        }
+    }
+
+    private boolean requestContactPermissions() {
         // Check the SDK version and whether the permission is already granted or not.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int contacts_permission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
             if (contacts_permission != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                                   Constants.WHEREUAT_PERMISSION_REQUEST_READ_CONTACTS);
+                        Constants.WHEREUAT_PERMISSION_REQUEST_READ_CONTACTS);
+                return false;
             } else {
-                Uri content_uri = ContactsContract.Contacts.CONTENT_URI;
-                Intent intent = new Intent(Intent.ACTION_PICK, content_uri);
-                startActivityForResult(intent, 1);
+                return true;
             }
+        } else {
+            return false;
         }
+    }
+
+    private void showContactsPhonebook() {
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, 1);
     }
 
     public void addKeyLoc(View view) {
@@ -179,23 +183,8 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
 
         String name = con.getContactName();
         String phone = con.getPhoneNumber();
-        if (name != null && phone != null){
-            ContentValues values = new ContentValues();
-            values.put(ContactEntry.COLUMN_NAME, con.getContactName());
-            values.put(ContactEntry.COLUMN_PHONE, con.getPhoneNumber());
-            values.put(ContactEntry.COLUMN_AUTOSHARE, false);
-
-            InsertCommand cmd = new InsertCommand(this, ContactEntry.TABLE_NAME, null, values);
-            new DbTask(new DbTask.AsyncResponse() {
-                @Override
-                public void processFinish(Object result) {
-                    if ((Long) result != -1) {
-                        Log.d(TAG, "Successfully inserted contact");
-                    } else {
-                        Log.d(TAG, "Some weird things happened when inserting contact into DB");
-                    }
-                }
-            }).execute(cmd);
+        if (name != null && phone != null) {
+            new Contact(name, phone, false).dbInsert(this);
         } else {
             Log.d(TAG, String.format("name: %s, phone: %s", name, phone));
             Toast.makeText(this, "Couldn't add that contact", Toast.LENGTH_SHORT).show();
