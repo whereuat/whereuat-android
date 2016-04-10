@@ -142,25 +142,21 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
 
     public void addContactOnClick(View view){
         mMenu.close(true);
-        if (requestContactPermissions()) {
+        if (hasPermission(Manifest.permission.READ_CONTACTS)) {
             showContactsPhonebook();
+        } else {
+            requestPermission(Manifest.permission.READ_CONTACTS,
+                              Constants.WHEREUAT_PERMISSION_REQUEST_READ_CONTACTS);
         }
     }
 
-    private boolean requestContactPermissions() {
-        // Check the SDK version and whether the permission is already granted or not.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int contacts_permission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
-            if (contacts_permission != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                        Constants.WHEREUAT_PERMISSION_REQUEST_READ_CONTACTS);
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
+    private boolean hasPermission(String permission) {
+        int perm_state = ContextCompat.checkSelfPermission(this, permission);
+        return perm_state == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission(String permission, int permission_request) {
+        ActivityCompat.requestPermissions(this, new String[]{permission}, permission_request);
     }
 
     private void showContactsPhonebook() {
