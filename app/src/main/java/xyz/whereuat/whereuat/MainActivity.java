@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -60,8 +61,9 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
             Log.d(TAG, "gucci perm");
         }
 
+        // When the activity is created start the LocationProviderService so it can be ready to
+        // get locations ASAP.
         Intent intent = new Intent(this, LocationProviderService.class);
-        intent.putExtra(Constants.SHOULD_START_LOCATION_SERVICE, true);
         this.startService(intent);
     }
 
@@ -116,22 +118,15 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
                     Context.NOTIFICATION_SERVICE);
             nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
 
-            Intent loc_intent = new Intent(context, LocationProviderService.class);
-            String to_phone = intent.getStringExtra(Constants.TO_PHONE_EXTRA);
-            loc_intent.putExtra(Constants.TO_PHONE_EXTRA, to_phone);
-            context.startService(loc_intent);
-        }
-    }
-
-    public static class AtResponseLocationReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            double lat = intent.getDoubleExtra(Constants.CURR_LATITUDE_EXTRA, -1.0);
-            double lng = intent.getDoubleExtra(Constants.CURR_LONGITUDE_EXTRA, -1.0);
-            (new HttpRequestHandler(context)).postAtResponse(
-                    (new PreferenceController(context)).getClientPhoneNumber(),
-                    intent.getStringExtra(Constants.TO_PHONE_EXTRA), lat, lng);
-//            context.startService(new Intent(context, LocationProvider.class));
+            Location loc = LocationProviderService.getLocation();
+            try {
+                (new HttpRequestHandler(context)).postAtResponse(
+                        (new PreferenceController(context)).getClientPhoneNumber(),
+                        intent.getStringExtra(Constants.TO_PHONE_EXTRA), loc.getLatitude(),
+                        loc.getLongitude());
+            } catch (NullPointerException e) {
+                Log.d(TAG, "location object was null");
+            }
         }
     }
 

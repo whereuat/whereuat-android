@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,40 +21,24 @@ import com.google.android.gms.location.LocationServices;
  */
 public class LocationProviderService extends Service implements OnConnectionFailedListener,
         ConnectionCallbacks {
-    private GoogleApiClient mGoogleApiClient;
-    private final String TAG = "LocationServiceProvider";
+    private static GoogleApiClient mGoogleApiClient;
+    private static final String TAG = "LocationServiceProvider";
 
+    // This function is here just so the service can start.
     @Override
     public int onStartCommand(Intent intent, int flags, int start_id) {
-        Location location;
-        // Only get locations if the service doesn't need to be started.
-        try {
-            if (!intent.getBooleanExtra(Constants.SHOULD_START_LOCATION_SERVICE, false)) {
-                try {
-                    location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                    double lon = location.getLongitude();
-                    double lat = location.getLatitude();
-                    // TODO: I hate this. We need to pass this extra through here so we can catch
-                    // the broadcast later and know who to send our response to. That's terrible and
-                    // needs fixed.
-                    String to_phone = intent.getStringExtra(Constants.TO_PHONE_EXTRA);
-                    sendLocationRequestBroadcast(lon, lat, to_phone);
-                } catch (SecurityException e) {
-                    String text = "You need give location permissions to use whereu@.";
-                    Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                } catch (NullPointerException e) { Log.d(TAG, "null"); }
-            }
-        } catch (NullPointerException e) { }
         return START_STICKY;
     }
 
-    private void sendLocationRequestBroadcast(double lon, double lat, String to_phone) {
-        Intent result = new Intent();
-        result.putExtra(Constants.CURR_LONGITUDE_EXTRA, lon);
-        result.putExtra(Constants.CURR_LATITUDE_EXTRA, lat);
-        result.putExtra(Constants.TO_PHONE_EXTRA, to_phone);
-        result.setAction(Constants.LOCATION_BROADCAST);
-        sendBroadcast(result);
+    public static Location getLocation() {
+        try {
+            return LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        } catch (SecurityException e) {
+            Log.d(TAG, "No location permission");
+        } catch (NullPointerException e) {
+            Log.d(TAG, "Null API client");
+        }
+        return null;
     }
 
     @Override

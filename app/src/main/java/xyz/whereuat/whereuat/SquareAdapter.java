@@ -1,9 +1,10 @@
 package xyz.whereuat.whereuat;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ public class SquareAdapter extends BaseAdapter {
                                                 "Spetelius Bartlebee Cayenne Ray",
                                                 "Spencer Whitehead", "Julius Alexander IV",
                                                 "Peter Kang", "Ray Shu Jacobson"};
+    private static final String TAG = "SquareAdapter";
 
     public SquareAdapter(Context c) {
         mContext = c;
@@ -92,7 +94,12 @@ public class SquareAdapter extends BaseAdapter {
             flipper.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View click) {
-                    mContext.startService(new Intent(mContext, LocationProviderService.class));
+                    Location loc = LocationProviderService.getLocation();
+                    try {
+                        Log.d(TAG, loc.getLatitude() + " " + loc.getLongitude());
+                    } catch (NullPointerException e) {
+                        Log.d(TAG, "Null location");
+                    }
                 }
             });
         } else {
