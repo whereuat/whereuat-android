@@ -17,7 +17,7 @@ public class Contact implements DbObject {
     public final String phone;
     public final boolean autoshare;
 
-    private static final String TAG = "KeyLocObj";
+    private static final String TAG = "ContactObj";
 
     public Contact(String _name, String _phone, boolean _autoshare) {
         name = _name;
