@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,11 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private RelativeLayout mAccountRequestSection;
     private RelativeLayout mAccountCreateSection;
     private HttpRequestHandler mHttpReqHandler;
-    private AccountNewBroadcastReceiver mAccountNewReceiver;
-    private AccountRequestBroadcastReceiver mAccountRequestReceiver;
     private TokenBroadcastReceiver mTokenReceiver;
-    private IntentFilter mAccountNewFilter;
-    private IntentFilter mAccountRequestFilter;
     private IntentFilter mTokenFilter;
 
 
@@ -44,14 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         mAccountCreateSection = (RelativeLayout) findViewById(R.id.account_create_section);
         mHttpReqHandler = new HttpRequestHandler(this);
 
-        mAccountNewFilter = new IntentFilter(Constants.ACCOUNT_NEW_BROADCAST);
-        mAccountNewReceiver = new AccountNewBroadcastReceiver();
-        registerReceiver(mAccountNewReceiver, mAccountNewFilter);
-
-        mAccountRequestFilter = new IntentFilter(Constants.ACCOUNT_REQUEST_BROADCAST);
-        mAccountRequestReceiver = new AccountRequestBroadcastReceiver();
-        registerReceiver(mAccountRequestReceiver, mAccountRequestFilter);
-
         mTokenFilter = new IntentFilter(Constants.TOKEN_BROADCAST);
         mTokenReceiver = new TokenBroadcastReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(mTokenReceiver, mTokenFilter);
@@ -65,14 +56,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         try {
-            unregisterReceiver(mAccountNewReceiver);
-        } catch (IllegalArgumentException e) {}
-
-        try {
-            unregisterReceiver(mAccountRequestReceiver);
-        } catch (IllegalArgumentException e) {}
-
-        try {
             unregisterReceiver(mTokenReceiver);
         } catch (IllegalArgumentException e) {}
         super.onPause();
@@ -80,14 +63,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        try {
-            registerReceiver(mAccountNewReceiver, mAccountNewFilter);
-        } catch (IllegalArgumentException e) {}
-
-        try {
-            registerReceiver(mAccountRequestReceiver, mAccountRequestFilter);
-        } catch (IllegalArgumentException e) {}
-
         try {
             registerReceiver(mTokenReceiver, mTokenFilter);
         } catch (IllegalArgumentException e) {}
@@ -106,7 +81,23 @@ public class LoginActivity extends AppCompatActivity {
     public void requestAccount(View v) {
         String phone_number = mPhoneEdit.getText().toString();
         if (isValidPhoneForm(phone_number)) {
-            mHttpReqHandler.postAccountRequest(phone_number);
+            mHttpReqHandler.postAccountRequest(phone_number,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            mPrefs.setWaitingForVerifyPref(true);
+                            showCreateHideRequest();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            String text = "Error making your account request :(";
+                            Toast.makeText(LoginActivity.this, text, Toast.LENGTH_SHORT).show();
+                            showRequestHideCreate();
+                            mPrefs.setWaitingForVerifyPref(false);
+                        }
+                    });
             mPrefs.setClientPhoneNumberPref(phone_number);
         } else {
             // TODO: There's a better way to handle this because the user shouldn't really have to
@@ -136,45 +127,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /*
-        A receiver for handling account/new POST responses. This receiver will alter the
-        SharedPreferences for waiting to verify and has account and will launch the contact grid
-        activity if the response is OK.
-     */
-    private class AccountNewBroadcastReceiver extends BroadcastReceiver {
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getIntExtra(Constants.RESPONSE_CODE_EXTRA, 400) == 200) {
-                mPrefs.setHasAccountPref(true);
-                mPrefs.setWaitingForVerifyPref(false);
-                LoginActivity.this.startActivity(
-                        new Intent(LoginActivity.this, MainActivity.class));
-                LoginActivity.this.finish();
-            } else {
-                String text = "Error making your account :(";
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                showRequestHideCreate();
-            }
-        }
-    }
-
-    /*
-        A receiver for handling account/request POST responses. This receiver will show the
-        UI for entering the verification code and set the SharedPreference for waiting to verify.
-     */
-    private class AccountRequestBroadcastReceiver extends BroadcastReceiver {
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getIntExtra(Constants.RESPONSE_CODE_EXTRA, 400) == 200) {
-                mPrefs.setWaitingForVerifyPref(true);
-                showCreateHideRequest();
-            } else {
-                String text = "Error making your account request :(";
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-                showRequestHideCreate();
-                mPrefs.setWaitingForVerifyPref(false);
-            }
-        }
-    }
-
-    /*
         A receiver for handling token generation. This receiver will trigger the new account
         request after generating the GCM token.
      */
@@ -182,7 +134,25 @@ public class LoginActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String token = intent.getStringExtra(Constants.TOKEN_EXTRA);
             mHttpReqHandler.postAccountNew(mPrefs.getClientPhoneNumber(), token,
-                    mVerifyCode.getText().toString());
+                    mVerifyCode.getText().toString(),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            mPrefs.setHasAccountPref(true);
+                            mPrefs.setWaitingForVerifyPref(false);
+                            LoginActivity.this.startActivity(
+                                    new Intent(LoginActivity.this, MainActivity.class));
+                            LoginActivity.this.finish();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            String text = "Error making your account :(";
+                            Toast.makeText(LoginActivity.this, text, Toast.LENGTH_SHORT).show();
+                            showRequestHideCreate();
+                        }
+                    });
         }
     }
 }

@@ -22,6 +22,8 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.github.clans.fab.FloatingActionMenu;
 
 public class MainActivity extends AppCompatActivity implements OnScrollListener {
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
 
     public static class AtResponseInitiateReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, Intent intent) {
             NotificationManager nm = (NotificationManager) context.getSystemService(
                     Context.NOTIFICATION_SERVICE);
             nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
@@ -115,28 +117,26 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
                 (new HttpRequestHandler(context)).postAtResponse(
                         (new PreferenceController(context)).getClientPhoneNumber(),
                         intent.getStringExtra(Constants.TO_PHONE_EXTRA), loc.getLatitude(),
-                        loc.getLongitude());
+                        loc.getLongitude(),
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                String text = "Got a 200 from the @response POST!";
+                                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                String text = "Error sending the location POST " +
+                                        error.toString();
+                                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
             } catch (NullPointerException e) {
                 Log.d(TAG, "location object was null");
             }
-        }
-    }
-
-    /*
-        Receives the response code from the @response POST
-     */
-    public static class AtResponseReceiver extends BroadcastReceiver {
-        String text;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getIntExtra(Constants.RESPONSE_CODE_EXTRA, 400) == 200) {
-                text = "Got a 200 from the @response POST!";
-            } else {
-                text = "Error sending the location POST " +
-                        Integer.toString(intent.getIntExtra(Constants.RESPONSE_CODE_EXTRA, 400));
-            }
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
         }
     }
 

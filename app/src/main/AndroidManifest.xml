@@ -40,10 +40,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
-        <service
-            android:name=".HttpRequestHandler$HttpPost"
-            android:exported="false" />
-
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -59,14 +55,6 @@
             android:exported="false" >
             <intent-filter>
                 <action android:name="xyz.whereuat.whereuat.AT_RESPONSE_INITIATE_BROADCAST" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".MainActivity$AtResponseReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="xyz.whereuat.whereuat.AT_RESPONSE_BROADCAST" />
             </intent-filter>
         </receiver>
 
