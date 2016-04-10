@@ -63,14 +63,6 @@
         </receiver>
 
         <receiver
-            android:name=".MainActivity$AtResponseLocationReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="xyz.whereuat.whereuat.LOCATION_BROADCAST" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
             android:name=".MainActivity$AtResponseReceiver"
             android:exported="false" >
             <intent-filter>
