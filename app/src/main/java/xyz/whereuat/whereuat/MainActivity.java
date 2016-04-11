@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
         startActivityForResult(intent, 1);
     }
 
-    public void addKeyLoc(View view) {
+    public void showKeyLocDialog(View view) {
         mMenu.close(true);
 
         FragmentManager fm = getFragmentManager();

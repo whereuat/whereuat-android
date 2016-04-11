@@ -38,7 +38,7 @@
             android:id="@+id/menu_add_key_loc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="addKeyLoc"
+            android:onClick="showKeyLocDialog"
             android:src="@drawable/ic_add_location"
             fab:fab_size="mini"
             fab:fab_colorNormal="@color/coolRed"

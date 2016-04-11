@@ -1,13 +1,17 @@
 package xyz.whereuat.whereuat;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 /**
@@ -16,15 +20,33 @@ import android.widget.Toast;
 public class KeyLocDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final Activity activity = getActivity();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.key_loc_dialog, null);
         builder.setView(view)
                .setMessage(R.string.key_location_prompt_text)
                .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       Toast.makeText(getActivity(), "Creating key location", Toast.LENGTH_SHORT).show();
+                       Dialog d = (Dialog) dialog;
+                       EditText e = (EditText) d.findViewById(R.id.key_loc_name_input);
+
+                       String name = e.getText().toString();
+                       Location loc = LocationProviderService.getLocation();
+
+                       boolean name_is_valid = KeyLocation.nameIsValid(name),
+                               loc_is_valid = KeyLocation.locIsValid(loc);
+                       if (name_is_valid && loc_is_valid) {
+                           addKeyLoc(activity, name, loc);
+                       } else if (!name_is_valid) {
+                           String err_str = "Invalid location name";
+                           Toast.makeText(activity, err_str, Toast.LENGTH_SHORT).show();
+                       } else if (!loc_is_valid) {
+                           String err_str = "Location not found";
+                           Toast.makeText(activity, err_str, Toast.LENGTH_SHORT).show();
+                       }
                    }
                })
                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -41,5 +63,9 @@ public class KeyLocDialogFragment extends DialogFragment {
         super.onStart();
         ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
         ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+    }
+
+    private void addKeyLoc(Context context, String name, Location loc) {
+        new KeyLocation(name, loc.getLatitude(), loc.getLongitude()).dbInsert(context);
     }
 }
