@@ -91,4 +91,8 @@ public class AutoShareStar extends View {
 
         super.onDraw(canvas);
     }
+
+    public void setIsFilled(boolean filled) {
+        mIsFilled = filled;
+    }
 }

@@ -7,13 +7,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +29,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.clans.fab.FloatingActionMenu;
 
-public class MainActivity extends AppCompatActivity implements OnScrollListener {
+import xyz.whereuat.whereuat.db.command.QueryCommand;
+import xyz.whereuat.whereuat.db.entry.ContactEntry;
+
+public class MainActivity extends AppCompatActivity implements OnScrollListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
     private FloatingActionMenu mMenu;
+    private ContactCardCursorAdapter mAdapter;
 
     private static final String TAG = "MainActivity";
 
@@ -37,10 +45,12 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
         setContentView(R.layout.activity_main);
 
         mMenu = (FloatingActionMenu) findViewById(R.id.menu);
+        mAdapter = new ContactCardCursorAdapter(this);
 
         GridView gridview = (GridView)findViewById(R.id.contact_gridview);
-        gridview.setAdapter(new SquareAdapter(this));
+        gridview.setAdapter(mAdapter);
         gridview.setOnScrollListener(this);
+        getSupportLoaderManager().initLoader(0, null, this);
 
         String location_permission = Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -61,6 +71,35 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
         // get locations ASAP.
         Intent intent = new Intent(this, LocationProviderService.class);
         this.startService(intent);
+    }
+
+    //
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // The String[] argument contains the a projection of the relevant columns.
+        return new CursorLoader(this, null,
+                new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE}, null, null,
+                null) {
+            // loadInBackground executes the query (which selects all contacts) in the background,
+            // off the UI thread.
+            @Override
+            public Cursor loadInBackground() {
+                return new QueryCommand(MainActivity.this, ContactEntry.TABLE_NAME, false,
+                        new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
+                                ContactEntry._ID},
+                        null, null, null, null, null, null).execute();
+            }
+        };
+    }
+
+    // Swap the new cursor in. LoaderManager will take care of closing the old cursor.
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+    }
+
+    // This is called when the last Cursor provided to onLoadFinished() is about to be closed.
+    // Swapping with null ensures the cursor is no longer being used.
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 
     @Override
@@ -181,6 +220,13 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener 
         String phone = con.getPhoneNumber();
         if (name != null && phone != null) {
             new Contact(name, phone, false).dbInsert(this);
+            Cursor cursor = new QueryCommand(MainActivity.this, ContactEntry.TABLE_NAME, false,
+                    new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
+                            ContactEntry._ID},
+                    null, null, null, null, null, null).execute();
+            // Refresh the data in the GridView.
+            mAdapter.swapCursor(cursor);
+            mAdapter.notifyDataSetChanged();
         } else {
             Log.d(TAG, String.format("name: %s, phone: %s", name, phone));
             Toast.makeText(this, "Couldn't add that contact", Toast.LENGTH_SHORT).show();
