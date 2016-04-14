@@ -23,9 +23,10 @@ public class ContactCardCursorAdapter extends SimpleCursorAdapter {
     // Each item in |bound_cols| should correspond to the item in |bound_views| where its data is
     // used.
     private static final String[] BOUND_COLS = new String[] {ContactEntry.COLUMN_NAME,
-            ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE, ContactEntry.COLUMN_AUTOSHARE};
+            ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE, ContactEntry.COLUMN_AUTOSHARE,
+            ContactEntry._ID};
     private static final int[] BOUND_VIEWS = new int[] {R.id.front_view, R.id.back_view_fullname,
-            R.id.auto_share_status, R.id.auto_share_button};
+            R.id.auto_share_status, R.id.auto_share_button, R.id.container_flipper};
 
 
     public ContactCardCursorAdapter(Context c) {
@@ -63,6 +64,11 @@ public class ContactCardCursorAdapter extends SimpleCursorAdapter {
                     case R.id.auto_share_button: {
                         ((AutoShareStar) view).setIsFilled(cursor.getInt(col_index) > 0);
                         break;
+                    }
+                    // Set the tag on the ContactCard to be the contact's id in the database so the
+                    // id can be used later to query the database.
+                    case R.id.container_flipper: {
+                        view.setTag(Integer.valueOf(cursor.getInt(col_index)));
                     }
                 }
                 return true;

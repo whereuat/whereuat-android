@@ -1,11 +1,19 @@
 package xyz.whereuat.whereuat;
 
 import android.content.Context;
-import android.location.Location;
+import android.database.Cursor;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import xyz.whereuat.whereuat.db.DbTask;
+import xyz.whereuat.whereuat.db.command.QueryCommand;
+import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
 /**
  * This class is a wrapper around a ViewFlipper to provide default functionality for a contact card
@@ -14,8 +22,8 @@ import android.widget.ViewFlipper;
 public class ContactCard extends ViewFlipper {
     private static final String TAG = "ContactCard";
 
-    public ContactCard(Context c, AttributeSet attrs) {
-        super(c, attrs);
+    public ContactCard(final Context context, AttributeSet attrs) {
+        super(context, attrs);
         // Set up the long click listener to flip the card.
         this.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -26,16 +34,46 @@ public class ContactCard extends ViewFlipper {
             }
         });
         // Set up the normal click listener to just log the location.
-        // TODO: This should send an @request.
         this.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View click) {
-                Location loc = LocationProviderService.getLocation();
-                try {
-                    Log.d(TAG, loc.getLatitude() + " " + loc.getLongitude());
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "Null location");
-                }
+                // Select the phone number of the contact with this id.
+                String selection = String.format("%s=?", ContactEntry._ID);
+                String[] selection_args = new String[] {ContactCard.this.getTag().toString()};
+                QueryCommand query = new QueryCommand(context, ContactEntry.TABLE_NAME, true,
+                        new String[] {ContactEntry.COLUMN_PHONE}, selection, selection_args, null,
+                        null, null, null);
+
+                new DbTask(new DbTask.AsyncResponse() {
+                    @Override
+                    public void processFinish(Object result) {
+                        // Get the contact's phone number from the cursor and send them an @request.
+                        if (((Cursor) result).moveToFirst()) {
+                            String to_phone = ((Cursor) result).getString(
+                                    ((Cursor) result).getColumnIndex(ContactEntry.COLUMN_PHONE));
+
+                            (new HttpRequestHandler(context)).postAtRequest(
+                                    (new PreferenceController(context)).getClientPhoneNumber(),
+                                    to_phone,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            String text = "Got a 200 from the @request POST!";
+                                            Toast.makeText(context, text, Toast.LENGTH_SHORT)
+                                                    .show();
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Log.d(TAG, "Error sending the @request POST " +
+                                                    error.toString());
+                                        }
+                                    }
+                            );
+                        }
+                    }
+                }).execute(query);
             }
         });
     }
