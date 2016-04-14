@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         try {
-            unregisterReceiver(mTokenReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mTokenReceiver);
         } catch (IllegalArgumentException e) {}
         super.onPause();
     }
@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         try {
-            registerReceiver(mTokenReceiver, mTokenFilter);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mTokenReceiver, mTokenFilter);
         } catch (IllegalArgumentException e) {}
         super.onResume();
     }
