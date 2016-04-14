@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -61,8 +62,20 @@ public class KeyLocDialogFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
-        ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+        final AlertDialog d = (AlertDialog) getDialog();
+        d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+        d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+
+        EditText e = (EditText) d.findViewById(R.id.key_loc_name_input);
+        e.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    d.getWindow().setSoftInputMode(
+                            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
     }
 
     private void addKeyLoc(Context context, String name, Location loc) {
