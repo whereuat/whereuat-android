@@ -75,6 +75,22 @@ public class HttpRequestHandler {
         }
     }
 
+    public boolean postAtRequest(String from_phone, String to_phone,
+                                  Response.Listener<String> success_listener,
+                                  Response.ErrorListener error_listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("from", from_phone);
+            json.put("to", to_phone);
+
+            post(Constants.AT_REQUEST_ROUTE, json, success_listener, error_listener);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private void post(String route, final JSONObject json,
                       Response.Listener<String> success_listener,
                       Response.ErrorListener error_listener) {

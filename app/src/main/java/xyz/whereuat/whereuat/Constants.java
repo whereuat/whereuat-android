@@ -7,6 +7,7 @@ public class Constants {
     public static final String WHEREUAT_URL = "http://whereuat.xyz/";
     public static final String ACCOUNT_REQUEST_ROUTE = "account/request";
     public static final String ACCOUNT_NEW_ROUTE = "account/new";
+    public static final String AT_REQUEST_ROUTE = "where";
     public static final String AT_RESPONSE_ROUTE = "at";
 
     public static final int WHEREUAT_PERMISSION_REQUEST_LOCATION = 69;
