@@ -9,16 +9,22 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import xyz.whereuat.whereuat.db.DbTask;
+import xyz.whereuat.whereuat.db.command.InsertCommand;
+
 /**
  * Created by kangp3 on 4/8/16.
  */
 public class KeyLocDialogFragment extends DialogFragment {
+    public static final String TAG = "KeyLocFragment";
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
@@ -37,8 +43,8 @@ public class KeyLocDialogFragment extends DialogFragment {
                        String name = e.getText().toString();
                        Location loc = LocationProviderService.getLocation();
 
-                       boolean name_is_valid = KeyLocation.nameIsValid(name),
-                               loc_is_valid = KeyLocation.locIsValid(loc);
+                       boolean name_is_valid = KeyLocationUtils.nameIsValid(name),
+                               loc_is_valid = KeyLocationUtils.locIsValid(loc);
                        if (name_is_valid && loc_is_valid) {
                            addKeyLoc(activity, name, loc);
                        } else if (!name_is_valid) {
@@ -79,6 +85,17 @@ public class KeyLocDialogFragment extends DialogFragment {
     }
 
     private void addKeyLoc(Context context, String name, Location loc) {
-        new KeyLocation(name, loc.getLatitude(), loc.getLongitude()).dbInsert(context);
+        InsertCommand cmd = KeyLocationUtils.buildInsertCommand(context, name,
+                loc.getLatitude(), loc.getLongitude());
+        new DbTask() {
+            @Override
+            public void onPostExecute(Object result) {
+                if ((Long) result != -1) {
+                    Log.d(TAG, "Successfully inserted");
+                } else {
+                    Log.d(TAG, "Some weird things happened when inserting into DB");
+                }
+            }
+        }.execute(cmd);
     }
 }
