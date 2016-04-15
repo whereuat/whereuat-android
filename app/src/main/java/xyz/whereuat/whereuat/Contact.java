@@ -32,15 +32,15 @@ public class Contact implements DbObject {
         values.put(ContactEntry.COLUMN_AUTOSHARE, autoshare);
 
         InsertCommand cmd = new InsertCommand(context, ContactEntry.TABLE_NAME, null, values);
-        new DbTask(new DbTask.AsyncResponse() {
+        new DbTask() {
             @Override
-            public void processFinish(Object result) {
+            public void onPostExecute(Object result) {
                 if ((Long) result != -1) {
                     Log.d(TAG, "Successfully inserted");
                 } else {
                     Log.d(TAG, "Some weird things happened when inserting into DB");
                 }
             }
-        }).execute(cmd);
+        }.execute(cmd);
     }
 }

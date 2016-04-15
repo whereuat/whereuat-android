@@ -42,15 +42,15 @@ public class KeyLocation implements DbObject {
         values.put(KeyLocationEntry.COLUMN_LONGITUDE, longitude);
 
         InsertCommand cmd = new InsertCommand(context, KeyLocationEntry.TABLE_NAME, null, values);
-        new DbTask(new DbTask.AsyncResponse() {
+        new DbTask() {
             @Override
-            public void processFinish(Object result) {
+            public void onPostExecute(Object result) {
                 if ((Long) result != -1) {
                     Log.d(TAG, "Successfully inserted");
                 } else {
                     Log.d(TAG, "Some weird things happened when inserting into DB");
                 }
             }
-        }).execute(cmd);
+        }.execute(cmd);
     }
 }
