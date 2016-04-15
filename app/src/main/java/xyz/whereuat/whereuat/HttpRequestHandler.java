@@ -44,6 +44,7 @@ public class HttpRequestHandler {
             json.put("phone-#", phone_number);
             json.put("gcm-token", gcm_tok);
             json.put("verification-code", verify_code);
+            json.put("client-os", Constants.CLIENT_OS);
             post(Constants.ACCOUNT_NEW_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {
