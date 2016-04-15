@@ -22,4 +22,6 @@ public class Constants {
     public static final String TOKEN_BROADCAST = "xyz.whereuat.whereuat.TOKEN_BROADCAST";
 
     public static final String DEFAULT_PHONE_REGION = "US";
+
+    public static final String CLIENT_OS = "ANDROID";
 }
