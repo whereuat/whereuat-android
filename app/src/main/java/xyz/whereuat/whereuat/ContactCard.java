@@ -44,9 +44,9 @@ public class ContactCard extends ViewFlipper {
                         new String[] {ContactEntry.COLUMN_PHONE}, selection, selection_args, null,
                         null, null, null);
 
-                new DbTask(new DbTask.AsyncResponse() {
+                new DbTask() {
                     @Override
-                    public void processFinish(Object result) {
+                    public void onPostExecute(Object result) {
                         // Get the contact's phone number from the cursor and send them an @request.
                         if (((Cursor) result).moveToFirst()) {
                             String to_phone = ((Cursor) result).getString(
@@ -73,7 +73,7 @@ public class ContactCard extends ViewFlipper {
                             );
                         }
                     }
-                }).execute(query);
+                }.execute(query);
             }
         });
     }
