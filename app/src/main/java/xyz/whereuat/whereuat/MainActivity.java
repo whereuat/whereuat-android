@@ -29,6 +29,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.clans.fab.FloatingActionMenu;
 
+import xyz.whereuat.whereuat.db.DbTask;
+import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
@@ -219,14 +221,34 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
         String name = con.getContactName();
         String phone = con.getPhoneNumber();
         if (name != null && phone != null) {
-            new Contact(name, phone, false).dbInsert(this);
-            Cursor cursor = new QueryCommand(MainActivity.this, ContactEntry.TABLE_NAME, false,
-                    new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
-                            ContactEntry._ID},
-                    null, null, null, null, null, null).execute();
-            // Refresh the data in the GridView.
-            mAdapter.swapCursor(cursor);
-            mAdapter.notifyDataSetChanged();
+            InsertCommand insert = ContactUtils.buildInsertCommand(this, name, phone, false);
+            new DbTask() {
+                @Override
+                public void onPostExecute(Object result) {
+                    if ((Long) result != -1) {
+                        Log.d(TAG, "Successfully inserted");
+                    } else {
+                        Log.d(TAG, "Some weird things happened when inserting into DB");
+                    }
+                }
+            }.execute(insert);
+
+            String[] selectCols = {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
+                                   ContactEntry._ID};
+            QueryCommand query = ContactUtils.buildSelectAllCommand(this, selectCols);
+            new DbTask() {
+                @Override
+                public void onPostExecute(Object result) {
+                    Cursor c = (Cursor) result;
+                    try {
+                        // Refresh the data in the GridView
+                        mAdapter.swapCursor(c);
+                        mAdapter.notifyDataSetChanged();
+                    } catch (NullPointerException e) {
+                        Log.d(TAG, "Null contact cursor");
+                    }
+                }
+            }.execute(query);
         } else {
             Log.d(TAG, String.format("name: %s, phone: %s", name, phone));
             Toast.makeText(this, "Couldn't add that contact", Toast.LENGTH_SHORT).show();

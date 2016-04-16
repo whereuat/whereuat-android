@@ -70,8 +70,8 @@ public class AutoShareStar extends View {
             final ContactCard contact_card = (ContactCard) this.getParent().getParent().getParent();
             String contact_id = contact_card.getTag().toString();
             String[] where_args = new String[] {contact_id};
-            UpdateCommand update = new UpdateCommand(mContext, ContactEntry.TABLE_NAME, updated_val,
-                    where, where_args);
+            UpdateCommand update = ContactUtils.buildUpdateCommand(mContext, updated_val, where,
+                    where_args);
 
             new DbTask() {
                 @Override
