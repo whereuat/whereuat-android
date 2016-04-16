@@ -57,12 +57,12 @@ public class ContactCardCursorAdapter extends SimpleCursorAdapter {
                     }
                     // Fill the autoshare status on the front of the card if it needs to be filled.
                     case R.id.auto_share_status: {
-                        ((AutoShareStar) view).setIsFilled(cursor.getInt(col_index) > 0);
+                        ((AutoShareStar) view).setAutoShare(cursor.getInt(col_index) > 0);
                         break;
                     }
                     // Fill the autoshare button on the back of the card if it needs to be filled.
                     case R.id.auto_share_button: {
-                        ((AutoShareStar) view).setIsFilled(cursor.getInt(col_index) > 0);
+                        ((AutoShareStar) view).setAutoShare(cursor.getInt(col_index) > 0);
                         break;
                     }
                     // Set the tag on the ContactCard to be the contact's id in the database so the
