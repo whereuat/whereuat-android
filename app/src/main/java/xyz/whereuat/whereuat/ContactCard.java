@@ -37,6 +37,10 @@ public class ContactCard extends ViewFlipper {
         this.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View click) {
+                // The back view shouldn't do anything if it's clicked.
+                if (ContactCard.this.getCurrentView().getId() == R.id.back_view)
+                    return;
+
                 // Select the phone number of the contact with this id.
                 String selection = String.format("%s=?", ContactEntry._ID);
                 String[] selection_args = new String[] {ContactCard.this.getTag().toString()};
