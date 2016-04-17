@@ -2,14 +2,14 @@ package xyz.whereuat.whereuat;
 
 import android.content.Context;
 
-import org.json.JSONObject;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 /**
  * Created by julius on 3/25/16.
@@ -54,6 +54,7 @@ public class HttpRequestHandler {
     }
 
     public boolean postAtResponse(String from_phone, String to_phone, double lat, double lng,
+                                  KeyLocationUtils.KeyLocation key_loc,
                                   Response.Listener<String> success_listener,
                                   Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
@@ -66,8 +67,8 @@ public class HttpRequestHandler {
             curr_loc_json.put("lng", lng);
             json.put("current-location", curr_loc_json);
 
-            // TODO: Tie this into the db.
-            json.put("key-location", JSONObject.NULL);
+            JSONObject key_loc_json = key_loc.toJson();
+            json.put("key-location", key_loc_json == null ? JSONObject.NULL : key_loc_json);
             post(Constants.AT_RESPONSE_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {

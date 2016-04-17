@@ -33,6 +33,7 @@ import xyz.whereuat.whereuat.db.DbTask;
 import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
+import xyz.whereuat.whereuat.db.entry.KeyLocationEntry;
 
 public class MainActivity extends AppCompatActivity implements OnScrollListener,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -148,36 +149,46 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
 
     public static class AtResponseInitiateReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(final Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             NotificationManager nm = (NotificationManager) context.getSystemService(
                     Context.NOTIFICATION_SERVICE);
             nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
 
-            Location loc = LocationProviderService.getLocation();
-            try {
-                (new HttpRequestHandler(context)).postAtResponse(
-                        (new PreferenceController(context)).getClientPhoneNumber(),
-                        intent.getStringExtra(Constants.TO_PHONE_EXTRA), loc.getLatitude(),
-                        loc.getLongitude(),
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                String text = "Got a 200 from the @response POST!";
-                                Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                String text = "Error sending the location POST " +
-                                        error.toString();
-                                Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-                            }
-                        }
-                );
-            } catch (NullPointerException e) {
-                Log.d(TAG, "location object was null");
-            }
+            String[] select_cols = {KeyLocationEntry.COLUMN_NAME, KeyLocationEntry.COLUMN_LATITUDE,
+                    KeyLocationEntry.COLUMN_LONGITUDE};
+            QueryCommand query = KeyLocationUtils.buildSelectAllCommand(context, select_cols);
+            new DbTask() {
+                @Override
+                public void onPostExecute(Object result) {
+                    Location loc = LocationProviderService.getLocation();
+                    Cursor c = (Cursor) result;
+                    KeyLocationUtils.KeyLocation key_loc = KeyLocationUtils.findNearestLoc(c, loc);
+                    try {
+                        (new HttpRequestHandler(context)).postAtResponse(
+                                (new PreferenceController(context)).getClientPhoneNumber(),
+                                intent.getStringExtra(Constants.TO_PHONE_EXTRA), loc.getLatitude(),
+                                loc.getLongitude(), key_loc,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        Log.d(TAG, "200 from @response POST");
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        String text = "Error sending the location POST " +
+                                                error.toString();
+                                        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                        );
+                    } catch (NullPointerException e) {
+                        Log.d(TAG, "location object was null");
+                    }
+
+                }
+            }.execute(query);
         }
     }
 
