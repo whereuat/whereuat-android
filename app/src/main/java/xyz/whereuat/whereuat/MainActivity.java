@@ -162,7 +162,9 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
                 public void onPostExecute(Object result) {
                     Location loc = LocationProviderService.getLocation();
                     Cursor c = (Cursor) result;
-                    KeyLocationUtils.KeyLocation key_loc = KeyLocationUtils.findNearestLoc(c, loc);
+                    KeyLocationUtils.KeyLocation key_loc =
+                            c.getCount() == 0 ? new KeyLocationUtils.KeyLocation() :
+                                                KeyLocationUtils.findNearestLoc(c, loc);
                     try {
                         (new HttpRequestHandler(context)).postAtResponse(
                                 (new PreferenceController(context)).getClientPhoneNumber(),
