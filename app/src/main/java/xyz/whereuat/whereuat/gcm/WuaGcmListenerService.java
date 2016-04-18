@@ -24,6 +24,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -45,24 +46,39 @@ public class WuaGcmListenerService extends GcmListenerService {
      */
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        sendNotification(data.getString("from-#"));
+        if (isAtRequest(data)) {
+            sendAtRequestNotification(data.getString(Constants.GCM_FROM_KEY));
+        } else if (isAtResponse(data)) {
+            sendAtResponseNotification(data.getString(Constants.GCM_FROM_KEY),
+                    data.getString(Constants.GCM_PLACE_KEY));
+        } else
+            Log.d(TAG, "Bad notification received.");
     }
 
-    /**
-     * Create and show a simple notification containing the received GCM message.
-     *
-     * @param from_phone The phone that sent the message.
-     */
-    private void sendNotification(String from_phone) {
-        // Generate a random integer so the notification can be uniquely identified later.
-        int notification_id = (new Random()).nextInt(Integer.MAX_VALUE);
+    private boolean isAtRequest(Bundle data) {
+        return data.getString(Constants.GCM_FROM_KEY) != null &&
+                data.getString(Constants.GCM_PLACE_KEY) == null;
+    }
 
+    private boolean isAtResponse(Bundle data) {
+        return data.getString(Constants.GCM_FROM_KEY) != null &&
+                data.getString(Constants.GCM_PLACE_KEY) != null;
+    }
+
+    /*
+        A helper function to send a notification without an action.
+     */
+    private void sendNotification(int notification_id, String message) {
+        sendNotification(notification_id, message, null);
+    }
+
+    private void sendNotification(int notification_id,
+                                  String message, NotificationCompat.Action action) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pending_intent = PendingIntent.getActivity(this, notification_id, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        String message = String.format("%s: whereu@?", from_phone);
         Uri sound_uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notification_builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
@@ -70,12 +86,25 @@ public class WuaGcmListenerService extends GcmListenerService {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(sound_uri)
-                .addAction(createResponseAction(notification_id, from_phone))
                 .setContentIntent(pending_intent);
+
+        if (action != null)
+            notification_builder.addAction(action);
 
         NotificationManager notification_manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notification_manager.notify(notification_id, notification_builder.build());
+    }
+
+    private void sendAtRequestNotification(String from_phone) {
+        int notification_id = (new Random()).nextInt(Integer.MAX_VALUE);
+        sendNotification(notification_id, String.format("%s: whereu@?", from_phone),
+                createResponseAction(notification_id, from_phone));
+    }
+
+    private void sendAtResponseNotification(String from_phone, String loc) {
+        sendNotification((new Random()).nextInt(Integer.MAX_VALUE),
+                String.format("%s is @ %s", from_phone, loc));
     }
 
     private NotificationCompat.Action createResponseAction(int notification_id, String to_phone) {
