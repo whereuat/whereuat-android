@@ -24,4 +24,7 @@ public class Constants {
     public static final String DEFAULT_PHONE_REGION = "US";
 
     public static final String CLIENT_OS = "ANDROID";
+
+    public static final String GCM_FROM_KEY = "from-#";
+    public static final String GCM_PLACE_KEY = "place";
 }
