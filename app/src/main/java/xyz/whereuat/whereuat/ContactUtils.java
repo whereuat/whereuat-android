@@ -24,6 +24,13 @@ public class ContactUtils {
         return new InsertCommand(context, ContactEntry.TABLE_NAME, null, values);
     }
 
+    public static QueryCommand buildSelectContactByPhoneCommand(Context context, String phone,
+                                                                String[] select_cols) {
+        String selection = String.format("%s=?", ContactEntry.COLUMN_PHONE);
+        return new QueryCommand(context, ContactEntry.TABLE_NAME, true, select_cols, selection,
+                new String[] {phone}, null, null, null, null);
+    }
+
     public static QueryCommand buildSelectAllCommand(Context context, String[] select_cols) {
         return new QueryCommand(context, ContactEntry.TABLE_NAME, false, select_cols, null, null,
                                 null, null, null, null);
