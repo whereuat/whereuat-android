@@ -20,6 +20,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,8 +32,12 @@ import com.google.android.gms.gcm.GcmListenerService;
 import java.util.Random;
 
 import xyz.whereuat.whereuat.Constants;
+import xyz.whereuat.whereuat.ContactUtils;
 import xyz.whereuat.whereuat.MainActivity;
 import xyz.whereuat.whereuat.R;
+import xyz.whereuat.whereuat.db.DbTask;
+import xyz.whereuat.whereuat.db.command.QueryCommand;
+import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
 public class WuaGcmListenerService extends GcmListenerService {
     private static final String TAG = "WuaGcmListenerService";
@@ -96,15 +101,41 @@ public class WuaGcmListenerService extends GcmListenerService {
         notification_manager.notify(notification_id, notification_builder.build());
     }
 
-    private void sendAtRequestNotification(String from_phone) {
-        int notification_id = (new Random()).nextInt(Integer.MAX_VALUE);
-        sendNotification(notification_id, String.format("%s: whereu@?", from_phone),
-                createResponseAction(notification_id, from_phone));
+    private void sendAtRequestNotification(final String from_phone) {
+        QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, from_phone,
+                new String[] {ContactEntry.COLUMN_NAME});
+        new DbTask() {
+            @Override
+            public void onPostExecute(Object result) {
+                Cursor c = (Cursor) result;
+                if (c.moveToFirst()) {
+                    String name = c.getString(c.getColumnIndex(ContactEntry.COLUMN_NAME));
+                    int notification_id = (new Random()).nextInt(Integer.MAX_VALUE);
+                    sendNotification(notification_id, String.format("%s: whereu@?", name),
+                            createResponseAction(notification_id, from_phone));
+                } else {
+                    Log.d(TAG, "Couldn't retrieve the client from the db.");
+                }
+            }
+        }.execute(query);
     }
 
-    private void sendAtResponseNotification(String from_phone, String loc) {
-        sendNotification((new Random()).nextInt(Integer.MAX_VALUE),
-                String.format("%s is @ %s", from_phone, loc));
+    private void sendAtResponseNotification(String from_phone, final String loc) {
+        QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, from_phone,
+                new String[] {ContactEntry.COLUMN_NAME});
+        new DbTask() {
+            @Override
+            public void onPostExecute(Object result) {
+                Cursor c = (Cursor) result;
+                if (c.moveToFirst()) {
+                    String name = c.getString(c.getColumnIndex(ContactEntry.COLUMN_NAME));
+                    sendNotification((new Random()).nextInt(Integer.MAX_VALUE),
+                            String.format("%s is @ %s", name, loc));
+                } else {
+                    Log.d(TAG, "Couldn't retrieve the client from the db.");
+                }
+            }
+        }.execute(query);
     }
 
     private NotificationCompat.Action createResponseAction(int notification_id, String to_phone) {
