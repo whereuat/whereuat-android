@@ -52,12 +52,44 @@ public class WuaGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
         if (isAtRequest(data)) {
-            sendAtRequestNotification(data.getString(Constants.GCM_FROM_KEY));
+            handleAtRequest(data);
         } else if (isAtResponse(data)) {
             sendAtResponseNotification(data.getString(Constants.GCM_FROM_KEY),
                     data.getString(Constants.GCM_PLACE_KEY));
         } else
             Log.d(TAG, "Bad notification received.");
+    }
+
+    /*
+        Determines how to handle an @request based on if the sender is autoshared or not. If they
+        are autoshared, then an intent is sent to MainActivity.AtResponseInitiateReceiver to send an
+        @response. If they aren't autoshared, a notification is displayed with a button to respond.
+     */
+    private void handleAtRequest(Bundle data) {
+        final String from_phone = data.getString(Constants.GCM_FROM_KEY);
+        QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, from_phone,
+                new String[] {ContactEntry.COLUMN_AUTOSHARE});
+        new DbTask() {
+            @Override
+            public void onPostExecute(Object result) {
+                Cursor c = (Cursor) result;
+                if (c.moveToFirst()) {
+                    boolean is_autoshared = c.getInt(
+                            c.getColumnIndex(ContactEntry.COLUMN_AUTOSHARE)) > 0;
+                    // If the contact is autoshared, send an intent to the main activity to send an
+                    // @response.
+                    if (is_autoshared) {
+                        Intent intent = new Intent(Constants.AT_RESPONSE_INITIATE_BROADCAST);
+                        intent.putExtra(Constants.TO_PHONE_EXTRA, from_phone);
+                        sendBroadcast(intent);
+                    } else {
+                        sendAtRequestNotification(from_phone);
+                    }
+                } else {
+                    Log.d(TAG, "The client was not found.");
+                }
+            }
+        }.execute(query);
     }
 
     private boolean isAtRequest(Bundle data) {

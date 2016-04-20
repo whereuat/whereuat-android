@@ -150,9 +150,12 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
     public static class AtResponseInitiateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            NotificationManager nm = (NotificationManager) context.getSystemService(
-                    Context.NOTIFICATION_SERVICE);
-            nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
+            // If there is a notification associated with this intent it should be canceled.
+            if (intent.hasExtra(Constants.NOTIFICATION_ID_EXTRA)) {
+                NotificationManager nm = (NotificationManager) context.getSystemService(
+                        Context.NOTIFICATION_SERVICE);
+                nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
+            }
 
             String[] select_cols = {KeyLocationEntry.COLUMN_NAME, KeyLocationEntry.COLUMN_LATITUDE,
                     KeyLocationEntry.COLUMN_LONGITUDE};
