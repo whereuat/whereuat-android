@@ -14,6 +14,7 @@ public final class ContactEntry implements BaseColumns {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_PHONE = "phone";
     public static final String COLUMN_AUTOSHARE = "autoshare";
+    public static final String COLUMN_COLOR = "color";
 
     public ContactEntry() { }
 
@@ -22,7 +23,8 @@ public final class ContactEntry implements BaseColumns {
                                          new SimpleEntry<>(_ID, "INTEGER PRIMARY KEY"),
                                          new SimpleEntry<>(COLUMN_NAME, "VARCHAR"),
                                          new SimpleEntry<>(COLUMN_PHONE, "VARCHAR"),
-                                         new SimpleEntry<>(COLUMN_AUTOSHARE, "BOOLEAN"));
+                                         new SimpleEntry<>(COLUMN_AUTOSHARE, "BOOLEAN"),
+                                         new SimpleEntry<>(COLUMN_COLOR, "INT"));
 
     public static final String SQL_DELETE_ENTRIES =
             WhereuatDbHelper.dropTableIfExistsSql(TABLE_NAME);

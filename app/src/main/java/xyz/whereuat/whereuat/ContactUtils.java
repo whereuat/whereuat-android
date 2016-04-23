@@ -15,11 +15,12 @@ public class ContactUtils {
     private static final String TAG = "ContactObj";
 
     public static InsertCommand buildInsertCommand(Context context, String name, String phone,
-                                                   boolean autoshare) {
+                                                   boolean autoshare, int color) {
         ContentValues values = new ContentValues();
         values.put(ContactEntry.COLUMN_NAME, name);
         values.put(ContactEntry.COLUMN_PHONE, phone);
         values.put(ContactEntry.COLUMN_AUTOSHARE, autoshare);
+        values.put(ContactEntry.COLUMN_COLOR, color);
 
         return new InsertCommand(context, ContactEntry.TABLE_NAME, null, values);
     }

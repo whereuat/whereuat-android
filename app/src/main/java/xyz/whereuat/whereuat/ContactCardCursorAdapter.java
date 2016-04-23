@@ -47,7 +47,8 @@ public class ContactCardCursorAdapter extends SimpleCursorAdapter {
                         ((LatoTextView) view.findViewById(R.id.front_view_fullname)).setText(name);
                         ((LatoTextView) view.findViewById(R.id.front_view_initials)).setText(
                                 getInitials(name));
-                        view.setBackgroundColor(generateRandomColor());
+                        view.setBackgroundColor(cursor.getInt(
+                                cursor.getColumnIndex(ContactEntry.COLUMN_COLOR)));
                         break;
                     }
                     // Set the name of the contact on the back of the card.
@@ -74,11 +75,6 @@ public class ContactCardCursorAdapter extends SimpleCursorAdapter {
                 return true;
             }
         });
-    }
-
-    private static int generateRandomColor() {
-        Random rnd = new Random();
-        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 
     // TODO: Flesh this function out once contacts are being pulled from the DB.
