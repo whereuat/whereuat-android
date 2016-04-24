@@ -32,7 +32,7 @@ import com.google.android.gms.gcm.GcmListenerService;
 import java.util.Random;
 
 import xyz.whereuat.whereuat.Constants;
-import xyz.whereuat.whereuat.ContactUtils;
+import xyz.whereuat.whereuat.utils.ContactUtils;
 import xyz.whereuat.whereuat.MainActivity;
 import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.DbTask;

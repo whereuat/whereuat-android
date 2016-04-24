@@ -1,10 +1,12 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.ui.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
+import xyz.whereuat.whereuat.R;
 
 
 /**

@@ -1,10 +1,9 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.ui.views;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +12,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import xyz.whereuat.whereuat.utils.ContactUtils;
+import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.DbTask;
 import xyz.whereuat.whereuat.db.command.UpdateCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;

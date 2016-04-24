@@ -1,4 +1,4 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.utils;
 
 import android.content.ContentValues;
 import android.content.Context;

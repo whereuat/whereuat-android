@@ -1,4 +1,4 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.ui.animations;
 /**
  * Copyright (c) 2012 Ephraim Tekle genzeb@gmail.com
  *

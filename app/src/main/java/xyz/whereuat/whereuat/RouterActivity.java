@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import xyz.whereuat.whereuat.utils.PreferenceController;
+
 /**
  * Created by julius on 3/25/16.
  *
