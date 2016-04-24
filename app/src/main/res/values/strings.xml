@@ -6,7 +6,8 @@
     <string name="account_request_btn_text">Let\'s go!</string>
     <string name="account_create_btn_text">Create</string>
     <string name="logo_description">whereu@ logo</string>
-    <string name="key_location_prompt_text">Set Current Location As</string>
+    <string name="key_location_prompt_title_text">Add Key Location</string>
+    <string name="key_location_prompt_hint_text">Current location name</string>
     <string name="okay">Okay</string>
     <string name="cancel">Cancel</string>
 </resources>
