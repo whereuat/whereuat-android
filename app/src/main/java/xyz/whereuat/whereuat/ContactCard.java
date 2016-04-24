@@ -62,7 +62,7 @@ public class ContactCard extends ViewFlipper {
                                     new Response.Listener<String>() {
                                         @Override
                                         public void onResponse(String response) {
-                                            String text = "Got a 200 from the @request POST!";
+                                            String text = "whereu@ sent!";
                                             Toast.makeText(context, text, Toast.LENGTH_SHORT)
                                                     .show();
                                         }
