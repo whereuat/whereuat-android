@@ -27,7 +27,7 @@ public class HttpRequestHandler {
                                       Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
-            json.put("phone-#", phone_number);
+            json.put(Constants.JSON_PHONE_KEY, phone_number);
             post(Constants.ACCOUNT_REQUEST_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {
@@ -41,10 +41,10 @@ public class HttpRequestHandler {
                                   Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
-            json.put("phone-#", phone_number);
-            json.put("gcm-token", gcm_tok);
-            json.put("verification-code", verify_code);
-            json.put("client-os", Constants.CLIENT_OS);
+            json.put(Constants.JSON_PHONE_KEY, phone_number);
+            json.put(Constants.JSON_GCM_TOK_KEY, gcm_tok);
+            json.put(Constants.JSON_VERIFICATION_KEY, verify_code);
+            json.put(Constants.JSON_CLIENT_OS_KEY, Constants.CLIENT_OS);
             post(Constants.ACCOUNT_NEW_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {
@@ -59,16 +59,17 @@ public class HttpRequestHandler {
                                   Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
-            json.put("from", from_phone);
-            json.put("to", to_phone);
+            json.put(Constants.JSON_FROM_KEY, from_phone);
+            json.put(Constants.JSON_TO_KEY, to_phone);
 
             JSONObject curr_loc_json = new JSONObject();
-            curr_loc_json.put("lat", lat);
-            curr_loc_json.put("lng", lng);
-            json.put("current-location", curr_loc_json);
+            curr_loc_json.put(Constants.JSON_LAT_KEY, lat);
+            curr_loc_json.put(Constants.JSON_LNG_KEY, lng);
+            json.put(Constants.JSON_CURR_LOC_KEY, curr_loc_json);
 
             JSONObject key_loc_json = key_loc.toJson();
-            json.put("key-location", key_loc_json == null ? JSONObject.NULL : key_loc_json);
+            json.put(Constants.JSON_KEY_LOC_KEY, key_loc_json == null ? JSONObject.NULL :
+                                                                        key_loc_json);
             post(Constants.AT_RESPONSE_ROUTE, json, success_listener, error_listener);
             return true;
         } catch (Exception e) {
@@ -82,8 +83,8 @@ public class HttpRequestHandler {
                                   Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
-            json.put("from", from_phone);
-            json.put("to", to_phone);
+            json.put(Constants.JSON_FROM_KEY, from_phone);
+            json.put(Constants.JSON_TO_KEY, to_phone);
 
             post(Constants.AT_REQUEST_ROUTE, json, success_listener, error_listener);
             return true;

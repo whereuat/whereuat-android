@@ -27,4 +27,15 @@ public class Constants {
 
     public static final String GCM_FROM_KEY = "from-#";
     public static final String GCM_PLACE_KEY = "place";
+
+    public static final String JSON_CLIENT_OS_KEY = "client-os";
+    public static final String JSON_CURR_LOC_KEY = "current-location";
+    public static final String JSON_FROM_KEY = "from";
+    public static final String JSON_GCM_TOK_KEY = "gcm-token";
+    public static final String JSON_KEY_LOC_KEY = "key-location";
+    public static final String JSON_LAT_KEY = "lat";
+    public static final String JSON_LNG_KEY = "lng";
+    public static final String JSON_PHONE_KEY = "phone-#";
+    public static final String JSON_TO_KEY = "to";
+    public static final String JSON_VERIFICATION_KEY = "verification-code";
 }
