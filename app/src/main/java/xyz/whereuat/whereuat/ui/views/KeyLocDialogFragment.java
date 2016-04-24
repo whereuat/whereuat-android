@@ -1,4 +1,4 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.ui.views;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,8 +16,11 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.DbTask;
 import xyz.whereuat.whereuat.db.command.InsertCommand;
+import xyz.whereuat.whereuat.utils.KeyLocationUtils;
+import xyz.whereuat.whereuat.utils.LocationProviderService;
 
 /**
  * Created by kangp3 on 4/8/16.

@@ -37,6 +37,14 @@ import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 import xyz.whereuat.whereuat.db.entry.KeyLocationEntry;
+import xyz.whereuat.whereuat.ui.ContactCardCursorAdapter;
+import xyz.whereuat.whereuat.ui.views.KeyLocDialogFragment;
+import xyz.whereuat.whereuat.utils.ContactRetriever;
+import xyz.whereuat.whereuat.utils.ContactUtils;
+import xyz.whereuat.whereuat.utils.HttpRequestHandler;
+import xyz.whereuat.whereuat.utils.KeyLocationUtils;
+import xyz.whereuat.whereuat.utils.LocationProviderService;
+import xyz.whereuat.whereuat.utils.PreferenceController;
 
 public class MainActivity extends AppCompatActivity implements OnScrollListener,
         LoaderManager.LoaderCallbacks<Cursor> {

@@ -1,4 +1,4 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.utils;
 
 import android.content.Context;
 
@@ -10,6 +10,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
+
+import xyz.whereuat.whereuat.Constants;
 
 /**
  * Created by julius on 3/25/16.

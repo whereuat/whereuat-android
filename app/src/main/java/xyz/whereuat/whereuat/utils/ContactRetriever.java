@@ -1,4 +1,4 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.util.Log;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+
+import xyz.whereuat.whereuat.Constants;
 
 /**
  * Created by whites5 on 3/22/16.

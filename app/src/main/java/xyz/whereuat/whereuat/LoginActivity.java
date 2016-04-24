@@ -19,6 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import xyz.whereuat.whereuat.gcm.RegistrationIntentService;
+import xyz.whereuat.whereuat.utils.HttpRequestHandler;
+import xyz.whereuat.whereuat.utils.PreferenceController;
 
 
 public class LoginActivity extends AppCompatActivity {

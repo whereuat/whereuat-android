@@ -1,4 +1,4 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.ui.views;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,9 +11,13 @@ import android.widget.ViewFlipper;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import xyz.whereuat.whereuat.ui.animations.AnimationFactory;
+import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.DbTask;
 import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
+import xyz.whereuat.whereuat.utils.HttpRequestHandler;
+import xyz.whereuat.whereuat.utils.PreferenceController;
 
 /**
  * This class is a wrapper around a ViewFlipper to provide default functionality for a contact card

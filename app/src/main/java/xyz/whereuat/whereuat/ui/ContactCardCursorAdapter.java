@@ -1,13 +1,13 @@
-package xyz.whereuat.whereuat;
+package xyz.whereuat.whereuat.ui;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 
-import java.util.Random;
-
+import xyz.whereuat.whereuat.ui.views.AutoShareStar;
+import xyz.whereuat.whereuat.ui.views.LatoTextView;
+import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
 
