@@ -19,17 +19,15 @@ public class PreferenceController {
         mPrefs = context.getSharedPreferences(WHEREUAT_PREFS, Context.MODE_PRIVATE);
     }
 
-    public boolean hasAccount() {
-        return mPrefs.getBoolean(HAS_ACCOUNT_PREF, false);
-    }
+    public boolean hasAccount() { return mPrefs.getBoolean(HAS_ACCOUNT_PREF, false); }
 
     public boolean isWaitingForVerify() {
         return mPrefs.getBoolean(IS_WAITING_FOR_VERIFY_PREF, false);
     }
 
     /*
-     * Updates whether or not the account was created in the preference. Returns true on a
-     * successful write to the preference.
+     * Updates the phone number preference with the client's phone number that they entered at
+     * account creation. Returns true on a successful write to the preference.
      */
     public boolean setClientPhoneNumberPref(String phone_number) {
         SharedPreferences.Editor editor = mPrefs.edit();
@@ -37,12 +35,10 @@ public class PreferenceController {
         return editor.commit();
     }
 
-    public String getClientPhoneNumber() {
-        return mPrefs.getString(CLIENT_PHONE_NUMBER_PREF, "");
-    }
+    public String getClientPhoneNumber() { return mPrefs.getString(CLIENT_PHONE_NUMBER_PREF, ""); }
 
     /*
-     * Updates whether or not the account was created in the preference. Returns true on a
+     * Updates the preference for whether or not the user has a whereu@ account. Returns true on a
      * successful write to the preference.
      */
     public boolean setHasAccountPref(boolean has_account) {
@@ -52,8 +48,8 @@ public class PreferenceController {
     }
 
     /*
-     * Updates whether or not the account was created in the preference. Returns true on a
-     * successful write to the preference.
+     * Updates the preference for whether or not the user is waiting to verify their account.
+     * Returns true on a successful write to the preference.
      */
     public boolean setWaitingForVerifyPref(boolean is_waiting_for_verify) {
         SharedPreferences.Editor editor = mPrefs.edit();
