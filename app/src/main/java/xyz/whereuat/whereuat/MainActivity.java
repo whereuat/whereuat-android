@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -28,6 +29,8 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.clans.fab.FloatingActionMenu;
+
+import java.util.Random;
 
 import xyz.whereuat.whereuat.db.DbTask;
 import xyz.whereuat.whereuat.db.command.InsertCommand;
@@ -79,16 +82,15 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
     //
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // The String[] argument contains the a projection of the relevant columns.
-        return new CursorLoader(this, null,
-                new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE}, null, null,
-                null) {
+        String[] cols = new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE};
+        return new CursorLoader(this, null, cols, null, null, null) {
             // loadInBackground executes the query (which selects all contacts) in the background,
             // off the UI thread.
             @Override
             public Cursor loadInBackground() {
                 return new QueryCommand(MainActivity.this, ContactEntry.TABLE_NAME, false,
                         new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
-                                ContactEntry._ID},
+                                ContactEntry._ID, ContactEntry.COLUMN_COLOR},
                         null, null, null, null, null, null).execute();
             }
         };
@@ -237,7 +239,8 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
         String name = con.getContactName();
         String phone = con.getPhoneNumber();
         if (name != null && phone != null) {
-            InsertCommand insert = ContactUtils.buildInsertCommand(this, name, phone, false);
+            InsertCommand insert = ContactUtils.buildInsertCommand(this, name, phone, false,
+                    generateRandomColor());
             new DbTask() {
                 @Override
                 public void onPostExecute(Object result) {
@@ -250,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
             }.execute(insert);
 
             String[] selectCols = {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
-                                   ContactEntry._ID};
+                                   ContactEntry._ID, ContactEntry.COLUMN_COLOR};
             QueryCommand query = ContactUtils.buildSelectAllCommand(this, selectCols);
             new DbTask() {
                 @Override
@@ -269,6 +272,17 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
             Log.d(TAG, String.format("name: %s, phone: %s", name, phone));
             Toast.makeText(this, "Couldn't add that contact", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private int generateRandomColor() {
+        Random rnd = new Random();
+        // A number between 0 and 360.
+        float hue = rnd.nextInt(360);
+        // The multiplier keeps the value in a range, the addition keeps the number farther from 0
+        // so colors that are almost black aren't generated.
+        float value = rnd.nextFloat() * 0.4f + 0.4f;
+        // Keep the saturation constant at 0.3.
+        return Color.HSVToColor(new float[] {hue, 0.3f, value});
     }
 }
 
