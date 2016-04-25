@@ -5,8 +5,7 @@ import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 
-import xyz.whereuat.whereuat.ui.views.AutoShareStar;
-import xyz.whereuat.whereuat.ui.views.LatoTextView;
+import xyz.whereuat.whereuat.ui.views.ContactCard;
 import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 
@@ -22,73 +21,30 @@ public class ContactCardCursorAdapter extends SimpleCursorAdapter {
     private static final String TAG = "ContactCardCursor";
     // Each item in |bound_cols| should correspond to the item in |bound_views| where its data is
     // used.
-    private static final String[] BOUND_COLS = new String[] {ContactEntry.COLUMN_NAME,
-            ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE, ContactEntry.COLUMN_AUTOSHARE,
-            ContactEntry._ID};
-    private static final int[] BOUND_VIEWS = new int[] {R.id.front_view, R.id.back_view_fullname,
-            R.id.auto_share_status, R.id.auto_share_button, R.id.container_flipper};
+    private static final String[] BOUND_COLS = new String[] {ContactEntry._ID};
+    private static final int[] BOUND_VIEWS = new int[] {R.id.container_flipper};
 
 
     public ContactCardCursorAdapter(Context c) {
         super(c, R.layout.contact_card, null, BOUND_COLS, BOUND_VIEWS, 0);
-
-        // The ViewBinder should be overridden with a custom ViewBinder so it can define what to do
-        // for views that are not text or need to have their text manipulated before being
-        // displayed.
-        setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(final View view, Cursor cursor, int col_index) {
-                int vid = view.getId();
-                switch (vid) {
-                    // Set up the front of a card by setting the background color, name, and
-                    // initials.
-                    case R.id.front_view: {
-                        String name = cursor.getString(col_index);
-                        ((LatoTextView) view.findViewById(R.id.front_view_fullname)).setText(name);
-                        ((LatoTextView) view.findViewById(R.id.front_view_initials)).setText(
-                                getInitials(name));
-                        view.setBackgroundColor(cursor.getInt(
-                                cursor.getColumnIndex(ContactEntry.COLUMN_COLOR)));
-                        break;
-                    }
-                    // Set the name of the contact on the back of the card.
-                    case R.id.back_view_fullname: {
-                        ((LatoTextView) view).setText(cursor.getString(col_index));
-                        break;
-                    }
-                    // Fill the autoshare status on the front of the card if it needs to be filled.
-                    case R.id.auto_share_status: {
-                        ((AutoShareStar) view).setAutoShare(cursor.getInt(col_index) > 0);
-                        break;
-                    }
-                    // Fill the autoshare button on the back of the card if it needs to be filled.
-                    case R.id.auto_share_button: {
-                        ((AutoShareStar) view).setAutoShare(cursor.getInt(col_index) > 0);
-                        break;
-                    }
-                    // Set the tag on the ContactCard to be the contact's id in the database so the
-                    // id can be used later to query the database.
-                    case R.id.container_flipper: {
-                        view.setTag(Integer.valueOf(cursor.getInt(col_index)));
-                    }
-                }
-                return true;
-            }
-        });
     }
 
-    // TODO: Flesh this function out once contacts are being pulled from the DB.
-    private String getInitials(String name) {
-        String[] names = name.split(" ");
-        if (names.length == 2) {
-            return String.format("%c%c", getFirstInitial(names[0]), getFirstInitial(names[1]));
-        }
-        return "XX";
-    }
-
-    private char getFirstInitial(String name) {
-        if (name.length() < 0) return 'X';
-        return Character.toUpperCase(name.charAt(0));
+    /**
+     * bindView should be overridden so it can pass data into the ContactCard to be set up and
+     * displayed.
+     *
+     * @param view a ContactCard
+     * @param context the calling Context
+     * @param cursor a cursor filled with data to populate the view
+     */
+    @Override
+    public void bindView (View view, Context context, Cursor cursor) {
+        String name = cursor.getString(cursor.getColumnIndex(ContactEntry.COLUMN_NAME));
+        boolean is_autoshared = cursor.getInt(cursor.getColumnIndex(
+                ContactEntry.COLUMN_AUTOSHARE)) > 0;
+        int color = cursor.getInt(cursor.getColumnIndex(ContactEntry.COLUMN_COLOR));
+        int id = cursor.getInt(cursor.getColumnIndex(ContactEntry._ID));
+        ((ContactCard) view).setData(name, is_autoshared, color, id);
     }
 }
 
