@@ -6,12 +6,12 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,11 +32,11 @@ public class KeyLocDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.DialogTheme);
         LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.key_loc_dialog, null);
+        View view = inflater.inflate(R.layout.key_loc_dialog, (ViewGroup) this.getView());
         builder.setView(view)
-               .setMessage(R.string.key_location_prompt_text)
+               .setTitle(R.string.key_location_prompt_title_text)
                .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
@@ -72,8 +72,6 @@ public class KeyLocDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         final AlertDialog d = (AlertDialog) getDialog();
-        d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
-        d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
 
         EditText e = (EditText) d.findViewById(R.id.key_loc_name_input);
         e.setOnFocusChangeListener(new View.OnFocusChangeListener() {

@@ -10,4 +10,5 @@
     <dimen name="auto_share_star_width">29.36dp</dimen>
     <dimen name="spacing_margin">10dp</dimen>
     <dimen name="spacing_margin_wide">15dp</dimen>
+    <dimen name="keyloc_dialog_edittext_minwidth">300dp</dimen>
 </resources>
