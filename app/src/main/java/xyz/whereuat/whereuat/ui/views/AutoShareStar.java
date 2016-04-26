@@ -35,6 +35,12 @@ public class AutoShareStar extends View {
     private Path mPath;
     private static final String TAG = "AutoShareStar";
 
+    /**
+     * The constructor pulls values out of attrs in order to set member variables.
+     *
+     * @param context the calling Context
+     * @param attrs a set of attributes for if the star is filled and/or clickable
+     */
     public AutoShareStar(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -61,16 +67,21 @@ public class AutoShareStar extends View {
         requestLayout();
     }
 
-    /*
-        When clicked, the contact's autoshare status will be updated and this star will be redrawn
-        along with the star on the other side of the contact's ContactCard.
+    /**
+     * When clicked, the contact's autoshare status will be updated and this star will be redrawn
+     * along with the star on the other side of the contact's ContactCard.
+     *
+     * @param event a MotionEvent on the card
+     * @return always returns true
      */
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
+        // Only trigger the event handler if the star is clickable
         if(event.getAction() == MotionEvent.ACTION_UP && mIsClickable) {
             ContentValues updated_val = new ContentValues();
             updated_val.put(ContactEntry.COLUMN_AUTOSHARE, !mIsAutoShared);
 
+            // Construct the query for updating the correct contact in the database.
             String where = String.format("%s=?", ContactEntry._ID);
             final ContactCard contact_card = (ContactCard) this.getParent().getParent().getParent();
             String contact_id = contact_card.getTag().toString();
@@ -78,7 +89,10 @@ public class AutoShareStar extends View {
             UpdateCommand update = ContactUtils.buildUpdateCommand(mContext, updated_val, where,
                     where_args);
 
+            // Execute the update query.
             new DbTask() {
+                // When the query finishes successfully, change the star's fill as well as the fill
+                // of the star on the other side of the card.
                 @Override
                 public void onPostExecute(Object result) {
                     if (((Integer) result) == 1) {
@@ -114,18 +128,23 @@ public class AutoShareStar extends View {
         float width = getWidth();
         float height = getHeight();
 
+        // X and Y coordinates for the bottom of the top point on the star.
         float neckY = (float) 0.34;
         float neckX = (float) 0.656;
+        // Y coordinate for the point of the left point of the star.
         float armY = (float) 0.393;
+        // X and Y coordinates for the bottom of the left point of the star.
         float pitY = (float) 0.648;
         float pitX = (float) 0.753;
+        // Y coordinate for the crease between the bottom two points on the star.
         float crotchY = (float) 0.834;
+        // X coordinate for the bottom left point on the star.
         float footX = (float) 0.807;
         float mid = (float) 0.5;
 
         mPath.moveTo(mid * width, 0);
 
-        // Draw the left side
+        // Draw the left side, starting at the top point and going counter-clockwise to the crotch.
         mPath.lineTo(neckX * width, neckY * height);
         mPath.lineTo(width, armY * height);
         mPath.lineTo(pitX * width, pitY * height);
@@ -133,7 +152,7 @@ public class AutoShareStar extends View {
 
         mPath.lineTo(mid * width, crotchY * height);
 
-        // Draw the right side
+        // Draw the right side, starting at the crotch and going counter-clockwise to the top point.
         mPath.lineTo((1-footX) * width, height);
         mPath.lineTo((1-pitX) * width, pitY * height);
         mPath.lineTo(0, armY * height);
@@ -147,6 +166,12 @@ public class AutoShareStar extends View {
         super.onDraw(canvas);
     }
 
+    /**
+     * Set the value of the star. The star should be redrawn otherwise issues arise when reusing the
+     * star's view.
+     *
+     * @param autoShare a boolean for if this star represents an autoshared contact
+     */
     public void setAutoShare(boolean autoShare) {
         mIsAutoShared = autoShare;
         redraw();
