@@ -93,4 +93,41 @@ public class ContactCard extends ViewFlipper {
     protected void onMeasure(int width_measure_spec, int height_measure_spec) {
         super.onMeasure(width_measure_spec, width_measure_spec);
     }
+
+    public void setData(String name, boolean is_autoshared, int color, int id) {
+        // Set up the front of a card by setting the background color, name, and
+        // initials.
+        View front_view = this.findViewById(R.id.front_view);
+        ((LatoTextView) front_view.findViewById(R.id.front_view_fullname)).setText(name);
+        ((LatoTextView) front_view.findViewById(R.id.front_view_initials)).setText(
+                getInitials(name));
+        front_view.setBackgroundColor(color);
+
+        // Set the name of the contact on the back of the card.
+        ((LatoTextView) this.findViewById(R.id.back_view_fullname)).setText(name);
+
+        // Fill the autoshare status on the front of the card if it needs to be filled.
+        ((AutoShareStar) this.findViewById(R.id.auto_share_status)).setAutoShare(is_autoshared);
+
+        // Fill the autoshare button on the back of the card if it needs to be filled.
+        ((AutoShareStar) this.findViewById(R.id.auto_share_button)).setAutoShare(is_autoshared);
+
+        // Set the tag on the ContactCard to be the contact's id in the database so the
+        // id can be used later to query the database.
+        this.setTag(id);
+    }
+
+    // TODO: Flesh this function out once contacts are being pulled from the DB.
+    private String getInitials(String name) {
+        String[] names = name.split(" ");
+        if (names.length == 2) {
+            return String.format("%c%c", getFirstInitial(names[0]), getFirstInitial(names[1]));
+        }
+        return "XX";
+    }
+
+    private char getFirstInitial(String name) {
+        if (name.length() < 0) return 'X';
+        return Character.toUpperCase(name.charAt(0));
+    }
 }

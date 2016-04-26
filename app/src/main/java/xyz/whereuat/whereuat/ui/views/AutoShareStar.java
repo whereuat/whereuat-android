@@ -53,6 +53,10 @@ public class AutoShareStar extends View {
 
     public void toggleAutoShare() {
         mIsAutoShared = !mIsAutoShared;
+        redraw();
+    }
+
+    private void redraw() {
         postInvalidate();
         requestLayout();
     }
@@ -145,5 +149,6 @@ public class AutoShareStar extends View {
 
     public void setAutoShare(boolean autoShare) {
         mIsAutoShared = autoShare;
+        redraw();
     }
 }
