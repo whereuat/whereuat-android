@@ -11,6 +11,9 @@ import xyz.whereuat.whereuat.R;
 
 /**
  * Created by julius on 3/24/16.
+ *
+ * This class wraps a TextView and makes it easier to set the style of text within the view. Its
+ * main purpose is to provide access to an enum for different styles of the Lato font.
  */
 public class LatoTextView extends TextView {
     public static final int BOLD = 0;
@@ -21,6 +24,8 @@ public class LatoTextView extends TextView {
         super(context, attrs);
         Typeface tf;
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.LatoTextView);
+        // Switch over the different styles of Lato and then set the text to the style defined in
+        // the XML attributes of the view.
         switch (ta.getInt(R.styleable.LatoTextView_lato_font, 0)) {
             case BOLD:
                 tf = Typeface.createFromAsset(context.getAssets(), "Lato-Bold.ttf");
@@ -35,5 +40,6 @@ public class LatoTextView extends TextView {
                 tf = Typeface.createFromAsset(context.getAssets(), "Lato-Regular.ttf");
         }
         setTypeface(tf);
+        ta.recycle();
     }
 }

@@ -94,6 +94,14 @@ public class ContactCard extends ViewFlipper {
         super.onMeasure(width_measure_spec, width_measure_spec);
     }
 
+    /**
+     * This function sets the data for the view and binds it to the proper inner views of the card.
+     *
+     * @param name a String for the name of the contact this card represents
+     * @param is_autoshared a boolean for the autoshare status of this contact
+     * @param color the color for this card
+     * @param id the id of the contact represented by this card, for use as the view's tag
+     */
     public void setData(String name, boolean is_autoshared, int color, int id) {
         // Set up the front of a card by setting the background color, name, and
         // initials.
