@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Created by julius on 3/25/16.
- *
- * This class manages the SharedPreferences and provides a way to interact with them.
+ * Manages the SharedPreferences and provides a way to interact with them.
  */
 public class PreferenceController {
     private static final String WHEREUAT_PREFS = "WHEREUAT_PREFS";
@@ -15,19 +13,45 @@ public class PreferenceController {
     private static final String CLIENT_PHONE_NUMBER_PREF = "CLIENT_PHONE_NUMBER";
     private SharedPreferences mPrefs;
 
+    /**
+     * Constructor for PreferenceController
+     *
+     * @param context Context of the application's shared preferences
+     */
     public PreferenceController(Context context) {
         mPrefs = context.getSharedPreferences(WHEREUAT_PREFS, Context.MODE_PRIVATE);
     }
 
+    /**
+     * Retrieve whether or not the client has an account
+     *
+     * @return true if the client has an account
+     */
     public boolean hasAccount() { return mPrefs.getBoolean(HAS_ACCOUNT_PREF, false); }
 
+    /**
+     * Retrieve whether or not the client is waiting for verification
+     *
+     * @return true if the client is waiting for verification
+     */
     public boolean isWaitingForVerify() {
         return mPrefs.getBoolean(IS_WAITING_FOR_VERIFY_PREF, false);
     }
 
-    /*
-     * Updates the phone number preference with the client's phone number that they entered at
-     * account creation. Returns true on a successful write to the preference.
+    /**
+     * Retrieve the client's phone number
+     *
+     * @return String with the client's phone number, empty string if the phone number does not
+     *         exist
+     */
+    public String getClientPhoneNumber() { return mPrefs.getString(CLIENT_PHONE_NUMBER_PREF, ""); }
+
+    /**
+     * Updates the phone number preference with the client's phone number entered at account
+     * creation
+     *
+     * @param phone_number Client's entered phone number
+     * @return true if the preference write was successful
      */
     public boolean setClientPhoneNumberPref(String phone_number) {
         SharedPreferences.Editor editor = mPrefs.edit();
@@ -35,11 +59,11 @@ public class PreferenceController {
         return editor.commit();
     }
 
-    public String getClientPhoneNumber() { return mPrefs.getString(CLIENT_PHONE_NUMBER_PREF, ""); }
-
-    /*
-     * Updates the preference for whether or not the user has a whereu@ account. Returns true on a
-     * successful write to the preference.
+    /**
+     * Updates the preference for whether or not the user has a whereu@ account
+     *
+     * @param has_account Value to set the HAS_ACCOUNT_PREF to
+     * @return true if successful write to the preference
      */
     public boolean setHasAccountPref(boolean has_account) {
         SharedPreferences.Editor editor = mPrefs.edit();
@@ -47,9 +71,11 @@ public class PreferenceController {
         return editor.commit();
     }
 
-    /*
-     * Updates the preference for whether or not the user is waiting to verify their account.
-     * Returns true on a successful write to the preference.
+    /**
+     * Updates the preference for whether or not the user is waiting to verify their account
+     *
+     * @param is_waiting_for_verify Value to set the IS_WAITING_FOR_VERIFY_PREF to
+     * @return true if successful write to the preference
      */
     public boolean setWaitingForVerifyPref(boolean is_waiting_for_verify) {
         SharedPreferences.Editor editor = mPrefs.edit();

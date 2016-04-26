@@ -16,7 +16,7 @@ import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import xyz.whereuat.whereuat.Constants;
 
 /**
- * Created by whites5 on 3/22/16.
+ * Utility class to retrieve contacts from the system contacts application
  */
 public class ContactRetriever {
     private static Context mContext;
@@ -30,14 +30,26 @@ public class ContactRetriever {
 
     private static final String TAG = "ContactRtrv";
 
-
-    public ContactRetriever(int reqCode, int resultCode, Intent data, Context con) {
+    /**
+     * Constructor for the ContactRetriever. This initiates the system contacts application and
+     * retrieves the data about the chosen contact, storing their name, ID, and phone number in
+     * the corresponding member variables.
+     *
+     * @param req_code Request code of the activity start request
+     * @param result_code Result code specifying the success of the activity
+     * @param data Intent that carries the result data
+     * @param con Context for the activity
+     */
+    public ContactRetriever(int req_code, int result_code, Intent data, Context con) {
         mContext = con;
-        switch (reqCode) {
+        switch (req_code) {
+            // Contact retriever activity request from MainActivity
             case (1) :
-                if (resultCode == Activity.RESULT_OK) {
+                if (result_code == Activity.RESULT_OK) {
+                    // Get the data from the Intent
                     Uri contactData = data.getData();
 
+                    // Query the Intent's data and extract the ID and name of the contact
                     Cursor c =  con.getContentResolver().query(contactData, PROJECTION, null, null,
                             null);
                     if (c != null) {
@@ -53,6 +65,7 @@ public class ContactRetriever {
                             Phone.TYPE,
                             Phone.TYPE_MOBILE);
 
+                    // Get the contact's phone number and convert it to E164 format
                     Cursor cursorPhone = con.getContentResolver().query(Phone.CONTENT_URI,
                             new String[]{Phone.NUMBER},
                             contact_query,
@@ -73,6 +86,14 @@ public class ContactRetriever {
         }
     }
 
+    /**
+     * Helper method to convert a phone number to E164 format as expected by the server
+     * (+1XXXXXXXXXX)
+     *
+     * @param raw_phone_number The unformatted phone number as stored by the system contacts
+     *                         application
+     * @return String storing the E164-formatted phone number
+     */
     private String convertToE164(String raw_phone_number) {
         PhoneNumberUtil phone_util = PhoneNumberUtil.getInstance();
         try {
@@ -90,14 +111,29 @@ public class ContactRetriever {
         }
     }
 
+    /**
+     * Getter for contact's ID
+     *
+     * @return The contact's system ID as a String
+     */
     public String getContactID(){
         return mContactID;
     }
 
+    /**
+     * Getter for contact's name
+     *
+     * @return The contact's name as a String
+     */
     public String getContactName(){
         return mContactName;
     }
 
+    /**
+     * Getter for contact's phone number
+     *
+     * @return The contact's phone number as a String
+     */
     public String getPhoneNumber(){
         return mPhoneNum;
     }
