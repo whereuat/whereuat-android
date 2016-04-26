@@ -14,16 +14,30 @@ import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.KeyLocationEntry;
 
 /**
- * Created by kangp3 on 4/10/16.
+ * Utilities for the key_locations table of the database
  */
 public class KeyLocationUtils {
     private static final String TAG = "KeyLocObj";
 
+    /**
+     * KeyLocation utility class to store data about a key location and convert it to JSON
+     */
     public static class KeyLocation {
         public String name = null;
         public Location loc = null;
 
+        /**
+         * Default constructor for KeyLocation
+         */
         public KeyLocation() { }
+
+        /**
+         * Constructor for KeyLocation
+         *
+         * @param name_ Name of the key location
+         * @param latitude_ Latitude of the key location
+         * @param longitude_ Longitude of the key location
+         */
         public KeyLocation(String name_, double latitude_, double longitude_) {
             loc = new Location("");
             loc.setLatitude(latitude_);
@@ -32,6 +46,13 @@ public class KeyLocationUtils {
             name = name_;
         }
 
+        /**
+         * Method to convert the KeyLocation object to a JSON object for packaging into POST
+         * requests
+         *
+         * @return JSONObject with the structure expected by the server
+         * @throws JSONException if building the JSON object fails
+         */
         public JSONObject toJson() throws JSONException {
             JSONObject json = new JSONObject();
             try {
@@ -58,22 +79,44 @@ public class KeyLocationUtils {
         }
     }
 
+    /**
+     * Method to check if a key location's name is valid (non-null and non-empty)
+     *
+     * @param name Name for validity check
+     * @return true if inputted name is valid
+     */
     public static boolean nameIsValid(String name) {
         return name != null && name.length() > 0;
     }
 
+    /**
+     * Method to check if a location is valid (non-null)
+     *
+     * @param loc Location for validity check
+     * @return true if inputted location is valid
+     */
     public static boolean locIsValid(Location loc) {
         return loc != null;
     }
 
-    // Cursor c is the result of a select all query over the key locations
+    /**
+     * Method to find the nearest location to the inputted origin Location
+     *
+     * @param c Cursor to set of a selection over all key location
+     * @param origin Point to find nearest key location to (generally the user's current location)
+     * @return Nearest key location to origin
+     * @throws IllegalArgumentException if the Cursor does not contain the necessary latitude,
+     *                                  longitude, and name columns
+     */
     public static KeyLocation findNearestLoc(Cursor c, Location origin) throws
             IllegalArgumentException {
+        // Initialize the nearest key location to null and the nearest_distance to infinity
         KeyLocation nearest = new KeyLocation();
         double nearest_dist = Double.MAX_VALUE;
 
         c.moveToFirst();
         do {
+            // Iterate over all of the key locations and find the one nearest to the origin
             double longitude = c.getDouble(c.getColumnIndexOrThrow(
                     KeyLocationEntry.COLUMN_LONGITUDE));
             double latitude = c.getDouble(c.getColumnIndexOrThrow(
@@ -97,6 +140,15 @@ public class KeyLocationUtils {
         return nearest;
     }
 
+    /**
+     * Method to build a command to insert a key location into the table
+     *
+     * @param context Context to build the command
+     * @param name Name of the key location to be inserted
+     * @param latitude Latitude of the key location to be inserted
+     * @param longitude Longitude of the key location to b inesrted
+     * @return InsertCommand to insert the given key location
+     */
     public static InsertCommand buildInsertCommand(Context context, String name, double latitude,
                                                    double longitude) {
         ContentValues values = new ContentValues();
@@ -107,6 +159,13 @@ public class KeyLocationUtils {
         return new InsertCommand(context, KeyLocationEntry.TABLE_NAME, null, values);
     }
 
+    /**
+     * Method to build a command to select all key locations
+     *
+     * @param context Context to build the command
+     * @param select_cols Columns to be included in the query's result
+     * @return QueryCommand to query over all of the key locations
+     */
     public static QueryCommand buildSelectAllCommand(Context context, String[] select_cols) {
         return new QueryCommand(context, KeyLocationEntry.TABLE_NAME, false, select_cols, null,
                 null, null, null, null, null);

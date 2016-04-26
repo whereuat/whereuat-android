@@ -15,21 +15,27 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationServices;
 
 /**
- * Created by julius on 4/4/16.
- *
- * This Service gives the device's current location.
+ * Gets the device's current location.
  */
 public class LocationProviderService extends Service implements OnConnectionFailedListener,
         ConnectionCallbacks {
     private static GoogleApiClient mGoogleApiClient;
     private static final String TAG = "LocationServiceProvider";
 
-    // This function is here just so the service can start.
+    /**
+     * Start the service
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int start_id) {
         return START_STICKY;
     }
 
+    /**
+     * Get the client's current location (or best possible guess)
+     *
+     * @return Location object containing the client's current location, null if the location could
+     *         not be found for whatever reason
+     */
     public static Location getLocation() {
         try {
             return LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -41,9 +47,15 @@ public class LocationProviderService extends Service implements OnConnectionFail
         return null;
     }
 
+    /**
+     * Override this method so the service can bind
+     */
     @Override
     public IBinder onBind(Intent intent) { return null; }
 
+    /**
+     * Connect to the Google API when the service is created
+     */
     @Override
     public void onCreate() {
         if (mGoogleApiClient == null) {
@@ -56,17 +68,35 @@ public class LocationProviderService extends Service implements OnConnectionFail
         mGoogleApiClient.connect();
     }
 
+    /**
+     * Disconnect from the Google API when the service is destroyed
+     */
     @Override
     public void onDestroy() {
         mGoogleApiClient.disconnect();
     }
 
+    /**
+     * Necessary Override for OnConnectionFailedListener
+     *
+     * @param result Result of failed connection
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult result) {}
 
+    /**
+     * Necessary Override for ConnectionCallbacks
+     *
+     * @param connection_hint Hint for the connection
+     */
     @Override
     public void onConnected(Bundle connection_hint) {}
 
+    /**
+     * Necessary Override for ConnectionCallbacks
+     *
+     * @param cause Cause for suspended connection
+     */
     @Override
     public void onConnectionSuspended(int cause) {}
 }

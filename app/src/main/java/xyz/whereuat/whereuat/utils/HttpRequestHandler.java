@@ -14,16 +14,30 @@ import org.json.JSONObject;
 import xyz.whereuat.whereuat.Constants;
 
 /**
- * Created by julius on 3/25/16.
+ * <p>Utilities for HTTP requests with the server. Uses the
+ * <a href="https://android.googlesource.com/platform/frameworks/volley">Volley</a> framework</p>
  */
 public class HttpRequestHandler {
     private static RequestQueue mRequestQ;
 
+    /**
+     * Constructor for the HttpRequestHandler. Instantiates a request queue for Volley
+     *
+     * @param context Context for the Volley request queue
+     */
     public HttpRequestHandler(Context context) {
         if (mRequestQ == null)
             mRequestQ = Volley.newRequestQueue(context);
     }
 
+    /**
+     * Method to build and initiate the POST request for requesting a new account from the server
+     *
+     * @param phone_number Phone number of the account
+     * @param success_listener Listener for a success (200) response from the server
+     * @param error_listener Listener for an error response from the server
+     * @return true if POST request is built successfully
+     */
     public boolean postAccountRequest(String phone_number,
                                       Response.Listener<String> success_listener,
                                       Response.ErrorListener error_listener) {
@@ -38,6 +52,16 @@ public class HttpRequestHandler {
         }
     }
 
+    /**
+     * Method to build and initiate the POST request for verifying a new account
+     *
+     * @param phone_number Phone number of the account
+     * @param gcm_tok GCM token of the client device
+     * @param verify_code Verification code for the account
+     * @param success_listener Listener for a success (200) response from the server
+     * @param error_listener Listener for an error response from the server
+     * @return true if POST request is built successfully
+     */
     public boolean postAccountNew(String phone_number, String gcm_tok, String verify_code,
                                   Response.Listener<String> success_listener,
                                   Response.ErrorListener error_listener) {
@@ -55,6 +79,18 @@ public class HttpRequestHandler {
         }
     }
 
+    /**
+     * Method to build and initiate the POST request for an @response
+     *
+     * @param from_phone Phone number of initiating client
+     * @param to_phone Phone number of receiving client
+     * @param lat Latitude of client's current location
+     * @param lng Longitude of client's current location
+     * @param key_loc Client's nearest key location
+     * @param success_listener Listener for a success (200) response from the server
+     * @param error_listener Listener for an error response from the server
+     * @return true if POST request is built successfully
+     */
     public boolean postAtResponse(String from_phone, String to_phone, double lat, double lng,
                                   KeyLocationUtils.KeyLocation key_loc,
                                   Response.Listener<String> success_listener,
@@ -80,9 +116,18 @@ public class HttpRequestHandler {
         }
     }
 
+    /**
+     * Method to build and initiate the POST request for an @request
+     *
+     * @param from_phone Phone number of initiating client
+     * @param to_phone Phone number of receiving client
+     * @param success_listener Listener for a success (200) response from the server
+     * @param error_listener Listener for an error response from the server
+     * @return true if POST request is built successfully
+     */
     public boolean postAtRequest(String from_phone, String to_phone,
-                                  Response.Listener<String> success_listener,
-                                  Response.ErrorListener error_listener) {
+                                 Response.Listener<String> success_listener,
+                                 Response.ErrorListener error_listener) {
         JSONObject json = new JSONObject();
         try {
             json.put(Constants.JSON_FROM_KEY, from_phone);
@@ -96,6 +141,14 @@ public class HttpRequestHandler {
         }
     }
 
+    /**
+     * Workhorse method for sending a POST request to the whereu@ server
+     *
+     * @param route Route on the server to direct the POST request to
+     * @param json JSON body to attach to POST request
+     * @param success_listener Listener for a success (200) response from the server
+     * @param error_listener Listener for an error response from the server
+     */
     private void post(String route, final JSONObject json,
                       Response.Listener<String> success_listener,
                       Response.ErrorListener error_listener) {
