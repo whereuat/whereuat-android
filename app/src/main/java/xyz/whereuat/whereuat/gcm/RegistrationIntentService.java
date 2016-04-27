@@ -27,12 +27,21 @@ import com.google.android.gms.iid.InstanceID;
 import xyz.whereuat.whereuat.Constants;
 import xyz.whereuat.whereuat.R;
 
+/**
+ * This class is for receiving incoming GCM token ID's so the application can be registered with the
+ * GCM server. This is necessary in order to send push notifications to other phones.
+ */
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
 
     public RegistrationIntentService() { super(TAG); }
 
+    /**
+     * This method receives an intent from the system when a GCM token is received.
+     *
+     * @param intent an Intent containing the GCM token for the application to use
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
 
@@ -47,7 +56,8 @@ public class RegistrationIntentService extends IntentService {
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete token refresh", e);
         }
-        // Broadcast the token to the login activity.
+        // Broadcast the token to the login activity so the account can be created on the whereu@
+        // server.
         Intent registrationComplete = new Intent(Constants.TOKEN_BROADCAST);
         registrationComplete.putExtra(Constants.TOKEN_EXTRA, token);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);

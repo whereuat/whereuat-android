@@ -20,6 +20,10 @@ import android.content.Intent;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
 
+/**
+ * This class handles a change to the GCM token and starts the {@link RegistrationIntentService} in
+ * order to get a receive a new token.
+ */
 public class WuaInstanceIDListenerService extends InstanceIDListenerService {
     /**
      * Called if InstanceID token is updated. This may occur if the security of the previous token
