@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -33,9 +34,9 @@ import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 import xyz.whereuat.whereuat.ui.ContactCardCursorAdapter;
 import xyz.whereuat.whereuat.ui.views.KeyLocDialogFragment;
-import xyz.whereuat.whereuat.utils.ContactRetriever;
 import xyz.whereuat.whereuat.utils.ContactUtils;
 import xyz.whereuat.whereuat.utils.LocationProviderService;
+import xyz.whereuat.whereuat.utils.PhonebookUtils;
 
 /**
  * This class contains the main contact grid view full of ContactCard squares. It is responsible
@@ -153,12 +154,13 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
                 break;
             }
             case Constants.WHEREUAT_PERMISSION_REQUEST_READ_CONTACTS: {
-                if (grant_results[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grant_results.length > 0 &&
+                        grant_results[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission is granted
                     showContactsPhonebook();
                 } else {
                     Toast.makeText(this,
-                                   "Until you grant the permission, we cannot display the names",
+                                   "Couldn't open phone book. Permission not granted.",
                                    Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -202,7 +204,8 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
     private void showContactsPhonebook() {
         // An intent must be sent to the contacts application so it can be started from this app.
         Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(intent, 1);
+        intent.setType(Phone.CONTENT_TYPE);
+        startActivityForResult(intent, Constants.PHONEBOOK_PICK_REQUEST);
     }
 
     public void showKeyLocDialog(View view) {
@@ -219,20 +222,37 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
      *
      * @param req_code the request code that triggered this function call
      * @param result_code the result code returned by the child
-     * @param data an intent used to give data back to the caller
+     * @param intent an intent used to give data back to the caller
      */
     @Override
-    public void onActivityResult(int req_code, int result_code, Intent data) {
-        super.onActivityResult(req_code, result_code, data);
-        ContactRetriever con = new ContactRetriever(req_code, result_code, data, this);
+    public void onActivityResult(int req_code, int result_code, Intent intent) {
+        super.onActivityResult(req_code, result_code, intent);
 
-        final String name = con.getContactName();
-        final String phone = con.getPhoneNumber();
+        switch(req_code) {
+            case(Constants.PHONEBOOK_PICK_REQUEST):
+                if (result_code == AppCompatActivity.RESULT_OK) {
+                    onPhonebookPickResult(intent);
+                }
+                break;
+        }
+    }
+
+    /**
+     * Process the result of the phone book activity
+     *
+     * @param intent Intent object carrying the data about the phone book selection
+     */
+    private void onPhonebookPickResult(Intent intent) {
+        // Retrieve the contact
+        ContactUtils.Contact contact = PhonebookUtils.getContactFromPhonebook(intent, this);
+
+        final String name = contact.getName();
+        final String phone = contact.getPhone();
         final Context context = this;
         if (name != null && phone != null) {
             String[] cols = {};
             QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, phone, cols);
-            // Execute the command that checks if the contact is already in the database.
+            // Check if the contact is already in the database.
             new DbTask() {
                 @Override
                 public void onPostExecute(Object result) {
@@ -242,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
                     if (!exists) {
                         InsertCommand insert = ContactUtils.buildInsertCommand(context, name, phone,
                                 false, generateRandomColor());
-                        // Execute the command to insert the contact into the database.
+                        // Insert the contact into the database.
                         new DbTask() {
                             @Override
                             public void onPostExecute(Object result) {
