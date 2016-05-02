@@ -17,6 +17,9 @@ public class Constants {
     public static final int WHEREUAT_PERMISSION_REQUEST_LOCATION = 69;
     public static final int WHEREUAT_PERMISSION_REQUEST_READ_CONTACTS = 100;
 
+    // Constants related to activity request codes
+    public static final int PHONEBOOK_PICK_REQUEST = 200;
+
     // Constants related to extras in intents sent from the application.
     public static final String NOTIFICATION_ID_EXTRA = "NOTIFICATION_ID";
     public static final String TOKEN_EXTRA = "TOKEN";

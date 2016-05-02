@@ -15,6 +15,51 @@ public class ContactUtils {
     private static final String TAG = "ContactObj";
 
     /**
+     * Contact utility class to store information about a contact
+     */
+    public static class Contact {
+        private String mName;
+        private String mPhone;
+
+        /**
+         * Default constructor for Contact objects
+         */
+        public Contact() {
+            mName = null;
+            mPhone = null;
+        }
+
+        /**
+         * Constructor for Contact objects
+         *
+         * @param name_ Name of contact
+         * @param phone_ Phone number of contact
+         */
+        public Contact(String name_, String phone_) {
+            mName = name_;
+            mPhone = phone_;
+        }
+
+        /**
+         * Getter method for contact name
+         *
+         * @return Contact's name as String
+         */
+        public String getName() {
+            return mName;
+        }
+
+        /**
+         * Getter method for contact phone number
+         *
+         * @return Contact's phone number as String
+         */
+        public String getPhone() {
+            return mPhone;
+        }
+    }
+
+    /**
      * Method to build a command to insert a contact into the table
      *
      * @param context Context to build the command
