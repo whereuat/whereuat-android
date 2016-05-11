@@ -9,6 +9,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -93,7 +95,13 @@ public class LoginActivity extends AppCompatActivity {
      * input for entering the verification code.
      */
     private void showCreateHideRequest() {
+        Animation out_anim = AnimationUtils.loadAnimation(this, R.anim.out_to_left);
+        Animation in_anim = AnimationUtils.loadAnimation(this, R.anim.in_from_right);
+
+        mAccountCreateSection.startAnimation(in_anim);
         mAccountCreateSection.setVisibility(View.VISIBLE);
+
+        mAccountRequestSection.startAnimation(out_anim);
         mAccountRequestSection.setVisibility(View.GONE);
     }
 
@@ -143,8 +151,14 @@ public class LoginActivity extends AppCompatActivity {
      * input for entering the user's phone number.
      */
     private void showRequestHideCreate() {
-        mAccountCreateSection.setVisibility(View.GONE);
+        Animation out_anim = AnimationUtils.loadAnimation(this, R.anim.out_to_right);
+        Animation in_anim = AnimationUtils.loadAnimation(this, R.anim.in_from_left);
+
+        mAccountRequestSection.startAnimation(in_anim);
         mAccountRequestSection.setVisibility(View.VISIBLE);
+
+        mAccountCreateSection.startAnimation(out_anim);
+        mAccountCreateSection.setVisibility(View.GONE);
     }
 
     /**
