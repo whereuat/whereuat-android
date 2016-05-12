@@ -10,4 +10,19 @@
     <string name="key_location_prompt_hint_text">Current location name</string>
     <string name="okay">Okay</string>
     <string name="cancel">Cancel</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+
+    <string-array name="drawer_items">
+        <item>Home</item>
+        <item>Key Locations</item>
+        <item>Pending Requests</item>
+        <item>Settings</item>
+    </string-array>
+    <array name="drawer_icons">
+        <item>@drawable/ic_home</item>
+        <item>@drawable/ic_key_location</item>
+        <item>@drawable/ic_pending_reqs</item>
+        <item>@drawable/ic_settings</item>
+    </array>
 </resources>

@@ -1,4 +1,4 @@
-package xyz.whereuat.whereuat.ui;
+package xyz.whereuat.whereuat.ui.adapters;
 
 import android.content.Context;
 import android.database.Cursor;

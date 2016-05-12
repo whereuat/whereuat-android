@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,24 +17,33 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
-import xyz.whereuat.whereuat.ui.ContactCardCursorAdapter;
+import xyz.whereuat.whereuat.ui.adapters.ContactCardCursorAdapter;
+import xyz.whereuat.whereuat.ui.adapters.DrawerListAdapter;
 import xyz.whereuat.whereuat.ui.views.KeyLocDialogFragment;
+import xyz.whereuat.whereuat.ui.views.LatoTextView;
 import xyz.whereuat.whereuat.utils.ContactUtils;
+import xyz.whereuat.whereuat.utils.DrawerItem;
 import xyz.whereuat.whereuat.utils.LocationProviderService;
 import xyz.whereuat.whereuat.utils.PhonebookUtils;
+import xyz.whereuat.whereuat.utils.PreferenceController;
 
 /**
  * This class contains the main contact grid view full of ContactCard squares. It is responsible
@@ -44,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
         LoaderManager.LoaderCallbacks<Cursor> {
     private FloatingActionMenu mMenu;
     private ContactCardCursorAdapter mAdapter;
+    private Toolbar mToolbar;
 
     private static final String TAG = "MainActivity";
 
@@ -51,18 +62,37 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         mMenu = (FloatingActionMenu) findViewById(R.id.menu);
-        mAdapter = new ContactCardCursorAdapter(this);
+        initContactGrid();
+        initDrawer();
+        initPermissionRequests();
 
+        // When the activity is created start the LocationProviderService so it can be ready to
+        // get locations ASAP.
+        Intent intent = new Intent(this, LocationProviderService.class);
+        this.startService(intent);
+    }
+
+    /**
+     * Initializes the Contacts adapter and GridView.
+     */
+    private void initContactGrid() {
+        mAdapter = new ContactCardCursorAdapter(this);
         // Connect the contact GridView into the adapter that holds the data from the database.
         GridView gridview = (GridView)findViewById(R.id.contact_gridview);
         gridview.setAdapter(mAdapter);
         gridview.setOnScrollListener(this);
         getSupportLoaderManager().initLoader(0, null, this);
+    }
 
+    /**
+     * Handles initially asking for permissions if they have not been granted yet.
+     */
+    private void initPermissionRequests() {
         String location_permission = Manifest.permission.ACCESS_FINE_LOCATION;
-
         // Make sure the application explicitly asks the user for location permissions.
         if (ContextCompat.checkSelfPermission(this, location_permission) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -76,11 +106,34 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
         } else {
             Log.d(TAG, "gucci perm");
         }
+    }
 
-        // When the activity is created start the LocationProviderService so it can be ready to
-        // get locations ASAP.
-        Intent intent = new Intent(this, LocationProviderService.class);
-        this.startService(intent);
+    /**
+     * Creates the slide-out drawer and populates it with list items.
+     */
+    private void initDrawer() {
+        ((LatoTextView) findViewById(R.id.drawer_phone)).setText(
+                new PreferenceController(this).getClientPhoneNumber());
+
+        DrawerLayout drawer_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        String[] menu_titles = getResources().getStringArray(R.array.drawer_items);
+        TypedArray menu_icons = getResources().obtainTypedArray(R.array.drawer_icons);
+
+        // Fill the list with all of the items to be displayed.
+        ArrayList<DrawerItem> drawer_items = new ArrayList<>();
+        for (int i = 0; i < menu_icons.length(); ++i) {
+            drawer_items.add(new DrawerItem(menu_titles[i], menu_icons.getResourceId(i, -1)));
+        }
+
+        ((ListView) findViewById(R.id.drawer_list)).setAdapter(
+                new DrawerListAdapter(this, drawer_items));
+
+        ActionBarDrawerToggle drawer_toggle = new ActionBarDrawerToggle(this, drawer_layout,
+                mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer_layout.setDrawerListener(drawer_toggle);
+
+        drawer_toggle.syncState();
+        menu_icons.recycle();
     }
 
     /**

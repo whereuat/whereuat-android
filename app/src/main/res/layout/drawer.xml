@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/offWhite"
+    android:clickable="true"
+    android:layout_gravity="start"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/drawer_info_section"
+        android:background="@drawable/bottom_border"
+        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="@dimen/spacing_margin_wide">
+        <xyz.whereuat.whereuat.ui.views.LatoTextView
+            android:id="@+id/drawer_name"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="Me"
+            android:textColor="@color/darkGray"
+            android:textSize="@dimen/drawer_font_size" />
+        <xyz.whereuat.whereuat.ui.views.LatoTextView
+            android:id="@+id/drawer_phone"
+            android:layout_below="@+id/drawer_name"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textColor="@color/darkGray"
+            android:textSize="@dimen/drawer_font_size"/>
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/drawer_list"
+        android:choiceMode="singleChoice"
+        android:divider="@null"
+        android:layout_below="@+id/drawer_info_section"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:paddingTop="@dimen/spacing_margin_wide" />
+
+    <ImageView
+        android:id="@+id/drawer_logo"
+        android:adjustViewBounds="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/drawer_logo" />
+</RelativeLayout>
