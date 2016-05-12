@@ -11,11 +11,11 @@ import android.widget.ViewFlipper;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import xyz.whereuat.whereuat.ui.animations.AnimationFactory;
+import xyz.whereuat.whereuat.AsyncExecutor;
 import xyz.whereuat.whereuat.R;
-import xyz.whereuat.whereuat.db.DbTask;
-import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
+import xyz.whereuat.whereuat.ui.animations.AnimationFactory;
+import xyz.whereuat.whereuat.utils.ContactUtils;
 import xyz.whereuat.whereuat.utils.HttpRequestHandler;
 import xyz.whereuat.whereuat.utils.PreferenceController;
 
@@ -48,20 +48,18 @@ public class ContactCard extends ViewFlipper {
                 if (ContactCard.this.getCurrentView().getId() == R.id.back_view)
                     return;
 
-                // Select the phone number of the contact with this id.
-                String selection = String.format("%s=?", ContactEntry._ID);
-                String[] selection_args = new String[] {ContactCard.this.getTag().toString()};
-                QueryCommand query = new QueryCommand(context, ContactEntry.TABLE_NAME, true,
-                        new String[] {ContactEntry.COLUMN_PHONE}, selection, selection_args, null,
-                        null, null, null);
-
-                new DbTask() {
+                AsyncExecutor.service.submit(new Runnable() {
                     @Override
-                    public void onPostExecute(Object result) {
+                    public void run() {
+                        // Select the phone number of the contact with this id.
+                        String contact_id = ContactCard.this.getTag().toString();
+                        Cursor phone = ContactUtils.buildSelectContactByIdCommand(context,
+                                contact_id, new String[] {ContactEntry.COLUMN_PHONE}).call();
+
                         // Get the contact's phone number from the cursor and send them an @request.
-                        if (((Cursor) result).moveToFirst()) {
-                            String to_phone = ((Cursor) result).getString(
-                                    ((Cursor) result).getColumnIndex(ContactEntry.COLUMN_PHONE));
+                        if (phone.moveToFirst()) {
+                            String to_phone = phone.getString(
+                                    phone.getColumnIndex(ContactEntry.COLUMN_PHONE));
 
                             (new HttpRequestHandler(context)).postAtRequest(
                                     (new PreferenceController(context)).getClientPhoneNumber(),
@@ -84,7 +82,7 @@ public class ContactCard extends ViewFlipper {
                             );
                         }
                     }
-                }.execute(query);
+                });
             }
         });
     }

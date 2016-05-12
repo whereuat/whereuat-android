@@ -1,5 +1,6 @@
 package xyz.whereuat.whereuat;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,8 +13,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import xyz.whereuat.whereuat.db.DbTask;
-import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.KeyLocationEntry;
 import xyz.whereuat.whereuat.utils.HttpRequestHandler;
 import xyz.whereuat.whereuat.utils.KeyLocationUtils;
@@ -36,23 +35,18 @@ public class AtResponseInitiateReceiver extends BroadcastReceiver {
             nm.cancel(intent.getIntExtra(Constants.NOTIFICATION_ID_EXTRA, 0));
         }
 
-        String[] select_cols = {KeyLocationEntry.COLUMN_NAME, KeyLocationEntry.COLUMN_LATITUDE,
-                KeyLocationEntry.COLUMN_LONGITUDE};
-        QueryCommand query = KeyLocationUtils.buildSelectAllCommand(context, select_cols);
-        // Execute the query to select all key locations.
-        new DbTask() {
-            /**
-             * After successfully selecting all the key locations, get the device's current
-             * location, get the phone number of the requester, and post an @response.
-             * @param result a Cursor going over the data of all the key locations
-             */
+        AsyncExecutor.service.submit(new Runnable() {
             @Override
-            public void onPostExecute(Object result) {
+            public void run() {
                 Location loc = LocationProviderService.getLocation();
-                Cursor c = (Cursor) result;
+
+                String[] select_cols = {KeyLocationEntry.COLUMN_NAME,
+                        KeyLocationEntry.COLUMN_LATITUDE, KeyLocationEntry.COLUMN_LONGITUDE};
+                Cursor all_locs = KeyLocationUtils.buildSelectAllCommand(context, select_cols)
+                        .call();
                 KeyLocationUtils.KeyLocation key_loc =
-                        c.getCount() == 0 ? new KeyLocationUtils.KeyLocation() :
-                                KeyLocationUtils.findNearestLoc(c, loc);
+                        all_locs.getCount() == 0 ? new KeyLocationUtils.KeyLocation() :
+                                KeyLocationUtils.findNearestLoc(all_locs, loc);
                 try {
                     // Post the @response.
                     (new HttpRequestHandler(context)).postAtResponse(
@@ -67,18 +61,22 @@ public class AtResponseInitiateReceiver extends BroadcastReceiver {
                             },
                             new Response.ErrorListener() {
                                 @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    String text = "Error sending the location POST " +
-                                            error.toString();
-                                    Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                                public void onErrorResponse(final VolleyError error) {
+                                    ((Activity) context).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String text = "Error sending the location POST " +
+                                                    error.toString();
+                                            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
                                 }
                             }
                     );
                 } catch (NullPointerException e) {
                     Log.d(TAG, "location object was null");
                 }
-
             }
-        }.execute(query);
+        });
     }
 }

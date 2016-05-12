@@ -37,7 +37,7 @@ public class InsertCommand extends DbCommand {
      * @return Long representing the id of the row that was inserted
      */
     @Override
-    public Long execute() {
+    public Long call() {
         return mDb.insert(mTable, mNullColumn, mValues);
     }
 }

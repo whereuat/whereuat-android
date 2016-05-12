@@ -2,7 +2,8 @@ package xyz.whereuat.whereuat.db.command;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.CallSuper;
+
+import java.util.concurrent.Callable;
 
 import xyz.whereuat.whereuat.db.WhereuatDbHelper;
 
@@ -10,7 +11,7 @@ import xyz.whereuat.whereuat.db.WhereuatDbHelper;
  * <p>This is the abstract class extended by all of the other DbCommand types. It provides an
  * implementation framework for DbCommand objects</p>
  */
-public abstract class DbCommand {
+public abstract class DbCommand implements Callable<Object> {
     protected String mTable;
     protected SQLiteDatabase mDb;
 
@@ -25,12 +26,4 @@ public abstract class DbCommand {
         mDb = new WhereuatDbHelper(context).getWritableDatabase();
         mTable = table;
     }
-
-    /**
-     * The main executed method of the DbCommand. This is left for the subclasses to implement,
-     * and should be the workhorse method for their execution.
-     *
-     * @return Object storing the result of the database operation
-     */
-    public abstract Object execute();
 }

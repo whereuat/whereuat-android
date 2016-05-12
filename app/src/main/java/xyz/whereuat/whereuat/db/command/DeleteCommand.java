@@ -34,7 +34,7 @@ public class DeleteCommand extends DbCommand {
      * @return Integer representing the number of rows that were deleted from the table
      */
     @Override
-    public Integer execute() {
+    public Integer call() {
         return mDb.delete(mTable, mWhere, mWhereArgs);
     }
 }

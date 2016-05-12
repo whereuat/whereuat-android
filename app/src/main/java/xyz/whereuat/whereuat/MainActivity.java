@@ -28,9 +28,6 @@ import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.Random;
 
-import xyz.whereuat.whereuat.db.DbTask;
-import xyz.whereuat.whereuat.db.command.InsertCommand;
-import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 import xyz.whereuat.whereuat.ui.ContactCardCursorAdapter;
 import xyz.whereuat.whereuat.ui.views.KeyLocDialogFragment;
@@ -102,10 +99,9 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
             // off the UI thread.
             @Override
             public Cursor loadInBackground() {
-                return new QueryCommand(MainActivity.this, ContactEntry.TABLE_NAME, false,
+                return (Cursor) ContactUtils.buildSelectAllCommand(MainActivity.this,
                         new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
-                                ContactEntry._ID, ContactEntry.COLUMN_COLOR},
-                        null, null, null, null, null, null).execute();
+                                ContactEntry._ID, ContactEntry.COLUMN_COLOR}).call();
             }
         };
     }
@@ -250,53 +246,49 @@ public class MainActivity extends AppCompatActivity implements OnScrollListener,
         final String phone = contact.getPhone();
         final Context context = this;
         if (name != null && phone != null) {
-            String[] cols = {};
-            QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, phone, cols);
-            // Check if the contact is already in the database.
-            new DbTask() {
+            AsyncExecutor.service.submit(new Runnable() {
                 @Override
-                public void onPostExecute(Object result) {
-                    Cursor c = (Cursor) result;
-                    boolean exists = c.getCount() > 0;
-                    // Make sure the contact does not exist before inserting it into the database.
+                public void run() {
+                    String[] cols = {};
+                    Cursor contact = ContactUtils.buildSelectContactByPhoneCommand(context,
+                            phone, cols).call();
+                    boolean exists = contact.getCount() > 0;
                     if (!exists) {
-                        InsertCommand insert = ContactUtils.buildInsertCommand(context, name, phone,
-                                false, generateRandomColor());
-                        // Insert the contact into the database.
-                        new DbTask() {
-                            @Override
-                            public void onPostExecute(Object result) {
-                                if ((Long) result != -1) {
-                                    Log.d(TAG, "Successfully inserted");
+                        Long result = ContactUtils.buildInsertCommand(context, name, phone,
+                                false, generateRandomColor()).call();
+                        if (result != -1) {
+                            Log.d(TAG, "Successfully inserted");
 
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
                                     String[] select_cols = {ContactEntry.COLUMN_NAME,
                                             ContactEntry.COLUMN_AUTOSHARE,
                                             ContactEntry._ID,
                                             ContactEntry.COLUMN_COLOR};
-                                    QueryCommand query = ContactUtils.buildSelectAllCommand(context,
-                                            select_cols);
-                                    new DbTask() {
-                                        @Override
-                                        public void onPostExecute(Object result) {
-                                            try {
-                                                // Refresh the data in the GridView
-                                                mAdapter.swapCursor((Cursor) result);
-                                            } catch (NullPointerException e) {
-                                                Log.d(TAG, "Null contact cursor");
-                                            }
-                                        }
-                                    }.execute(query);
-                                } else {
-                                    Log.d(TAG, "Some weird things happened when inserting into DB");
+                                    Cursor all_contacts = ContactUtils.buildSelectAllCommand(
+                                            context, select_cols).call();
+                                    try {
+                                        mAdapter.swapCursor(all_contacts);
+                                    } catch (NullPointerException e) {
+                                        Log.d(TAG, "Null contact cursor");
+                                    }
                                 }
-                            }
-                        }.execute(insert);
+                            });
+                        } else {
+                            Log.d(TAG, "Some weird things happened when inserting into DB");
+                        }
                     } else {
-                        String msg = "That phone number's already added!";
-                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String msg = "That phone number's already added!";
+                                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
                 }
-            }.execute(query);
+            });
         } else {
             Log.d(TAG, String.format("name: %s, phone: %s", name, phone));
             Toast.makeText(this, "Couldn't add that contact", Toast.LENGTH_SHORT).show();

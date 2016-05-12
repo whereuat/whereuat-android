@@ -1,5 +1,6 @@
 package xyz.whereuat.whereuat.ui.views;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,11 +13,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import xyz.whereuat.whereuat.utils.ContactUtils;
+import xyz.whereuat.whereuat.AsyncExecutor;
 import xyz.whereuat.whereuat.R;
-import xyz.whereuat.whereuat.db.DbTask;
-import xyz.whereuat.whereuat.db.command.UpdateCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
+import xyz.whereuat.whereuat.utils.ContactUtils;
 
 /**
  * Created by julius on 3/22/16.
@@ -75,37 +75,43 @@ public class AutoShareStar extends View {
      * @return always returns true
      */
     @Override
-    public boolean onTouchEvent(final MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         // Only trigger the event handler if the star is clickable
         if(event.getAction() == MotionEvent.ACTION_UP && mIsClickable) {
-            ContentValues updated_val = new ContentValues();
-            updated_val.put(ContactEntry.COLUMN_AUTOSHARE, !mIsAutoShared);
-
-            // Construct the query for updating the correct contact in the database.
-            String where = String.format("%s=?", ContactEntry._ID);
-            final ContactCard contact_card = (ContactCard) this.getParent().getParent().getParent();
-            String contact_id = contact_card.getTag().toString();
-            String[] where_args = new String[] {contact_id};
-            UpdateCommand update = ContactUtils.buildUpdateCommand(mContext, updated_val, where,
-                    where_args);
-
             // Execute the update query.
-            new DbTask() {
-                // When the query finishes successfully, change the star's fill as well as the fill
-                // of the star on the other side of the card.
+            AsyncExecutor.service.submit(new Runnable() {
                 @Override
-                public void onPostExecute(Object result) {
-                    if (((Integer) result) == 1) {
+                public void run() {
+                    Activity activity = (Activity) AutoShareStar.this.getContext();
+
+                    // Construct the query for updating the correct contact in the database.
+                    ContentValues updated_val = new ContentValues();
+                    updated_val.put(ContactEntry.COLUMN_AUTOSHARE, !mIsAutoShared);
+
+                    String where = String.format("%s=?", ContactEntry._ID);
+                    final ContactCard contact_card = (ContactCard) AutoShareStar.this.getParent()
+                            .getParent().getParent();
+                    String contact_id = contact_card.getTag().toString();
+                    String[] where_args = new String[] {contact_id};
+                    Integer result = ContactUtils.buildUpdateCommand(mContext, updated_val,
+                            where, where_args).call();
+
+                    if (result == 1) {
                         Log.d(TAG, "Successful autoshare update");
-                        AutoShareStar.this.toggleAutoShare();
-                        // Update the AutoShareStar on the other side of the ContactCard.
-                        ((AutoShareStar) contact_card.findViewById(R.id.auto_share_status))
-                                .toggleAutoShare();
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                AutoShareStar.this.toggleAutoShare();
+                                // Update the AutoShareStar on the other side of the ContactCard.
+                                ((AutoShareStar) contact_card.findViewById(R.id.auto_share_status))
+                                        .toggleAutoShare();
+                            }
+                        });
                     } else {
                         Log.d(TAG, "Something went wrong with the AutoShare update.");
                     }
                 }
-            }.execute(update);
+            });
         }
         return true;
     }

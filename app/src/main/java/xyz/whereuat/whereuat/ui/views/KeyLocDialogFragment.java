@@ -16,9 +16,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import xyz.whereuat.whereuat.AsyncExecutor;
 import xyz.whereuat.whereuat.R;
-import xyz.whereuat.whereuat.db.DbTask;
-import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.utils.KeyLocationUtils;
 import xyz.whereuat.whereuat.utils.LocationProviderService;
 
@@ -100,18 +99,18 @@ public class KeyLocDialogFragment extends DialogFragment {
      * @param name the name of the new key location
      * @param loc a Location object with the coordinates of the key location
      */
-    private void addKeyLoc(Context context, String name, Location loc) {
-        InsertCommand cmd = KeyLocationUtils.buildInsertCommand(context, name,
-                loc.getLatitude(), loc.getLongitude());
-        new DbTask() {
+    private void addKeyLoc(final Context context, final String name, final Location loc) {
+        AsyncExecutor.service.submit(new Runnable() {
             @Override
-            public void onPostExecute(Object result) {
-                if ((Long) result != -1) {
+            public void run() {
+                 Long result= KeyLocationUtils.buildInsertCommand(context, name,
+                        loc.getLatitude(), loc.getLongitude()).call();
+                if (result != -1) {
                     Log.d(TAG, "Successfully inserted");
                 } else {
                     Log.d(TAG, "Some weird things happened when inserting into DB");
                 }
             }
-        }.execute(cmd);
+        });
     }
 }

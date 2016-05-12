@@ -5,9 +5,9 @@ import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 
-import xyz.whereuat.whereuat.ui.views.ContactCard;
 import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
+import xyz.whereuat.whereuat.ui.views.ContactCard;
 
 
 /**

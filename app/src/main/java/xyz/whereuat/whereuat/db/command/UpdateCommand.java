@@ -36,7 +36,7 @@ public class UpdateCommand extends DbCommand {
      * @return Integer representing the number of rows that were updated in the table
      */
     @Override
-    public Integer execute() {
+    public Integer call() {
         return mDb.update(mTable, mValues, mWhere, mWhereArgs);
     }
 }

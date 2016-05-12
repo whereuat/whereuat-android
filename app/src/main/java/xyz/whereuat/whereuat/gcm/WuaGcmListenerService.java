@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -31,13 +30,12 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 import java.util.Random;
 
+import xyz.whereuat.whereuat.AsyncExecutor;
 import xyz.whereuat.whereuat.Constants;
-import xyz.whereuat.whereuat.utils.ContactUtils;
 import xyz.whereuat.whereuat.MainActivity;
 import xyz.whereuat.whereuat.R;
-import xyz.whereuat.whereuat.db.DbTask;
-import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
+import xyz.whereuat.whereuat.utils.ContactUtils;
 
 /**
  * This class is responsible for receiving push notifications and forming them into notifications to
@@ -72,18 +70,18 @@ public class WuaGcmListenerService extends GcmListenerService {
      * @param data a Bundle of data received with the notification which includes the sender's phone
      *             number
      */
-    private void handleAtRequest(Bundle data) {
-        final String from_phone = data.getString(Constants.GCM_FROM_KEY);
+    private void handleAtRequest(final Bundle data) {
         // Build and execute a query to determine if the contact is autoshared.
-        QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, from_phone,
-                new String[] {ContactEntry.COLUMN_AUTOSHARE});
-        new DbTask() {
+        AsyncExecutor.service.submit(new Runnable() {
             @Override
-            public void onPostExecute(Object result) {
-                Cursor c = (Cursor) result;
-                if (c.moveToFirst()) {
-                    boolean is_autoshared = c.getInt(
-                            c.getColumnIndex(ContactEntry.COLUMN_AUTOSHARE)) > 0;
+            public void run() {
+                String from_phone = data.getString(Constants.GCM_FROM_KEY);
+                Cursor contact = ContactUtils.buildSelectContactByPhoneCommand(
+                        WuaGcmListenerService.this, from_phone,
+                        new String[] {ContactEntry.COLUMN_AUTOSHARE}).call();
+                if (contact.moveToFirst()) {
+                    boolean is_autoshared = contact.getInt(
+                            contact.getColumnIndex(ContactEntry.COLUMN_AUTOSHARE)) > 0;
                     // If the contact is autoshared, send an intent to the main activity to send an
                     // @response without displaying the notification.
                     if (is_autoshared) {
@@ -97,7 +95,7 @@ public class WuaGcmListenerService extends GcmListenerService {
                     Log.d(TAG, "The client was not found.");
                 }
             }
-        }.execute(query);
+        });
     }
 
     private boolean isAtRequest(Bundle data) {
@@ -162,12 +160,12 @@ public class WuaGcmListenerService extends GcmListenerService {
     private void sendAtRequestNotification(final String from_phone) {
         // Find the contact in the database with the same phone number so its name can be displayed
         // in the notification.
-        QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, from_phone,
-                new String[] {ContactEntry.COLUMN_NAME});
-        new DbTask() {
+        AsyncExecutor.service.submit(new Runnable() {
             @Override
-            public void onPostExecute(Object result) {
-                Cursor c = (Cursor) result;
+            public void run() {
+                Cursor c = ContactUtils.buildSelectContactByPhoneCommand(
+                        WuaGcmListenerService.this, from_phone,
+                        new String[] {ContactEntry.COLUMN_NAME}).call();
                 if (c.moveToFirst()) {
                     // Extract the contact's name and use it in the notification's message.
                     String name = c.getString(c.getColumnIndex(ContactEntry.COLUMN_NAME));
@@ -178,7 +176,7 @@ public class WuaGcmListenerService extends GcmListenerService {
                     Log.d(TAG, "Couldn't retrieve the client from the db.");
                 }
             }
-        }.execute(query);
+        });
     }
 
     /**
@@ -187,14 +185,14 @@ public class WuaGcmListenerService extends GcmListenerService {
      * @param from_phone a String of the phone number of the requestee
      * @param loc a String of the name of the location
      */
-    private void sendAtResponseNotification(String from_phone, final String loc) {
-        QueryCommand query = ContactUtils.buildSelectContactByPhoneCommand(this, from_phone,
-                new String[] {ContactEntry.COLUMN_NAME});
+    private void sendAtResponseNotification(final String from_phone, final String loc) {
         // Once the query has completed, create the notification.
-        new DbTask() {
+        AsyncExecutor.service.submit(new Runnable() {
             @Override
-            public void onPostExecute(Object result) {
-                Cursor c = (Cursor) result;
+            public void run() {
+                Cursor c = ContactUtils.buildSelectContactByPhoneCommand(
+                        WuaGcmListenerService.this, from_phone,
+                        new String[] {ContactEntry.COLUMN_NAME}).call();
                 if (c.moveToFirst()) {
                     String name = c.getString(c.getColumnIndex(ContactEntry.COLUMN_NAME));
                     sendNotification((new Random()).nextInt(Integer.MAX_VALUE),
@@ -203,7 +201,7 @@ public class WuaGcmListenerService extends GcmListenerService {
                     Log.d(TAG, "Couldn't retrieve the client from the db.");
                 }
             }
-        }.execute(query);
+        });
     }
 
     /**

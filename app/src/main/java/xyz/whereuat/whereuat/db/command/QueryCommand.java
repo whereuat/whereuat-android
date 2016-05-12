@@ -55,8 +55,8 @@ public class QueryCommand extends DbCommand {
      * @return Cursor pointing to a set of entries with columns specified by the input
      */
     @Override
-    public Cursor execute() {
+    public Cursor call() {
         return mDb.query(mDistinct, mTable, mColumns, mSelection, mSelArgs, mGroupBy, mHaving,
-                         mOrderBy, mLimit);
+                             mOrderBy, mLimit);
     }
 }

@@ -95,6 +95,13 @@ public class ContactUtils {
                 new String[] {phone}, null, null, null, null);
     }
 
+    public static QueryCommand buildSelectContactByIdCommand(Context context, String id,
+                                                             String[] select_cols) {
+        String selection = String.format("%s=?", ContactEntry._ID);
+        return new QueryCommand(context, ContactEntry.TABLE_NAME, true, select_cols, selection,
+                new String[] {id}, null, null, null, null);
+    }
+
     /**
      * Method to build a command to select all contacts
      *
