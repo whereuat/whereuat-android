@@ -12,6 +12,8 @@
     <string name="cancel">Cancel</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
+    <string name="delete_pending_req_description">Delete a pending request.</string>
+    <string name="add_pending_req_description">Add a contact with a pending request.</string>
 
     <string-array name="drawer_items">
         <item>Home</item>

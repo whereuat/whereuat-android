@@ -40,7 +40,7 @@ public class DrawerListAdapter extends BaseAdapter {
         if (convert_view == null) {
             LayoutInflater inflater = (LayoutInflater)
                     mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convert_view = inflater.inflate(R.layout.drawer_list_item, null);
+            convert_view = inflater.inflate(R.layout.drawer_list_item, parent, false);
         }
 
         ImageView icon = (ImageView) convert_view.findViewById(R.id.drawer_list_item_icon);
