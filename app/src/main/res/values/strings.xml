@@ -8,6 +8,8 @@
     <string name="logo_description">whereu@ logo</string>
     <string name="key_location_prompt_title_text">Add Key Location</string>
     <string name="key_location_prompt_hint_text">Current location name</string>
+    <string name="duplicate_location_prompt_title_text">Duplicate location name</string>
+    <string name="duplicate_location_body_text">You already have a key location called \"%s\". Are you sure you want to create another one?</string>
     <string name="okay">Okay</string>
     <string name="cancel">Cancel</string>
     <string name="navigation_drawer_open">Open</string>

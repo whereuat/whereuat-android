@@ -160,6 +160,21 @@ public class KeyLocationUtils {
     }
 
     /**
+     * Method to build a command to select a key location by name
+     *
+     * @param context Context to build the command
+     * @param select_cols Columns to be included in the query's result
+     * @param name Name to be queried
+     * @return QueryCommand to query for key locations with the given name
+     */
+    public static QueryCommand buildSelectNameCommand(Context context, String[] select_cols,
+                                                      String name) {
+        String selection = String.format("%s=?", KeyLocationEntry.COLUMN_NAME);
+        return new QueryCommand(context, KeyLocationEntry.TABLE_NAME, false, select_cols, selection,
+                new String[] {name}, null, null, null, null);
+    }
+
+    /**
      * Method to build a command to select all key locations
      *
      * @param context Context to build the command

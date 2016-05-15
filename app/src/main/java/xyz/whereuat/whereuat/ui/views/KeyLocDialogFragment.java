@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,14 +48,41 @@ public class KeyLocDialogFragment extends DialogFragment {
                        Dialog d = (Dialog) dialog;
                        EditText e = (EditText) d.findViewById(R.id.key_loc_name_input);
 
-                       String name = e.getText().toString();
-                       Location loc = LocationProviderService.getLocation();
+                       final String name = e.getText().toString();
+                       final Location loc = LocationProviderService.getLocation();
 
                        // Make sure the name is not null or empty and the location is not null.
                        boolean name_is_valid = KeyLocationUtils.nameIsValid(name),
                                loc_is_valid = KeyLocationUtils.locIsValid(loc);
                        if (name_is_valid && loc_is_valid) {
-                           addKeyLoc(activity, name, loc);
+                           AsyncExecutor.service.submit(new Runnable() {
+                               @Override
+                               public void run() {
+                                   Cursor loc_cursor = KeyLocationUtils.buildSelectNameCommand(
+                                           activity, new String[] {}, name).call();
+                                   if (loc_cursor.getCount() == 0) {
+                                       Long result = KeyLocationUtils.buildInsertCommand(activity,
+                                               name, loc.getLatitude(), loc.getLongitude()).call();
+                                       if (result != -1) {
+                                           activity.runOnUiThread(new Runnable() {
+                                               @Override
+                                               public void run() {
+                                                   Toast.makeText(activity, activity.getResources()
+                                                           .getText(R.string
+                                                                   .key_loc_insert_success),
+                                                           Toast.LENGTH_SHORT).show();
+                                               }
+                                           });
+                                       } else {
+                                           Log.d(TAG, "Bad things happened when inserting into DB");
+                                       }
+                                   } else {
+                                       FragmentManager fm = getFragmentManager();
+                                       DuplicateKeyLocWarningDialogFragment.newInstance(name, loc)
+                                               .show(fm, TAG);
+                                   }
+                               }
+                           });
                        } else if (!name_is_valid) {
                            String err_str = "Invalid location name";
                            Toast.makeText(activity, err_str, Toast.LENGTH_SHORT).show();
@@ -64,7 +92,7 @@ public class KeyLocDialogFragment extends DialogFragment {
                        }
                    }
                })
-                // The "Cancel" button shouldn't do anything.
+               // The "Cancel" button shouldn't do anything.
                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
@@ -87,28 +115,6 @@ public class KeyLocDialogFragment extends DialogFragment {
                 if (hasFocus) {
                     d.getWindow().setSoftInputMode(
                             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                }
-            }
-        });
-    }
-
-    /**
-     * This function wraps an insert into the key location table.
-     *
-     * @param context the calling Context
-     * @param name the name of the new key location
-     * @param loc a Location object with the coordinates of the key location
-     */
-    private void addKeyLoc(final Context context, final String name, final Location loc) {
-        AsyncExecutor.service.submit(new Runnable() {
-            @Override
-            public void run() {
-                 Long result= KeyLocationUtils.buildInsertCommand(context, name,
-                        loc.getLatitude(), loc.getLongitude()).call();
-                if (result != -1) {
-                    Log.d(TAG, "Successfully inserted");
-                } else {
-                    Log.d(TAG, "Some weird things happened when inserting into DB");
                 }
             }
         });
