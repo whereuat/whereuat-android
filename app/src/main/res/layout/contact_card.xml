@@ -16,7 +16,7 @@
             android:layout_alignParentTop="true"
             android:layout_height="@dimen/auto_share_star_height"
             android:layout_width="@dimen/auto_share_star_width"
-            app:draw_color="@color/offWhite"
+            app:draw_color="@color/lightGray"
             app:is_clickable="false" />
         <xyz.whereuat.whereuat.ui.views.LatoTextView
             android:id="@+id/front_view_initials"
@@ -24,7 +24,7 @@
             android:layout_centerInParent="true"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:textColor="@color/offWhite"
+            android:textColor="@color/lightGray"
             android:textSize="@dimen/front_initials_font_size" />
         <xyz.whereuat.whereuat.ui.views.LatoTextView
             android:id="@+id/front_view_fullname"
@@ -35,13 +35,13 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:singleLine="true"
-            android:textColor="@color/offWhite"
+            android:textColor="@color/lightGray"
             android:textSize="@dimen/front_fullname_font_size" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/back_view"
-        android:background="@color/offWhite"
+        android:background="@color/lightGray"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:padding="@dimen/spacing_margin">

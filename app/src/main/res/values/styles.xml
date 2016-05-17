@@ -5,14 +5,14 @@
 
         <item name="colorPrimary">@color/coolRed</item>
         <item name="colorPrimaryDark">@color/darkGray</item>
-        <item name="colorAccent">@color/offWhite</item>
+        <item name="colorAccent">@color/lightGray</item>
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
     <style name="WhereuatActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:textColorPrimary">@color/darkGray</item>
-        <item name="android:background">@color/offWhite</item>
+        <item name="android:background">@color/lightGray</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">

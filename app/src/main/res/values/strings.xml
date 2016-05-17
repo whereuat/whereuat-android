@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">whereu@</string>
     <string name="action_settings">Settings</string>
-    <string name="verification_input_text">Enter the Verification Number</string>
-    <string name="phone_number_input_text">Enter Your Phone #</string>
-    <string name="account_request_btn_text">Let\'s go!</string>
-    <string name="account_create_btn_text">Create</string>
+    <string name="verification_code_input_prompt">enter your verification code here</string>
+    <string name="verification_input_text">XXXXX</string>
+    <string name="phone_number_input_prompt">enter your phone number here</string>
+    <string name="phone_number_input_text">+1XXXXXXXXXX</string>
+    <string name="account_request_btn_text">verify</string>
+    <string name="account_create_btn_text">submit</string>
     <string name="logo_description">whereu@ logo</string>
     <string name="key_location_prompt_title_text">Add Key Location</string>
     <string name="key_location_prompt_hint_text">Current location name</string>

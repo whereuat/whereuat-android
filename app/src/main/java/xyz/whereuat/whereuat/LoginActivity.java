@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -35,12 +34,11 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPhoneEdit;
     private EditText mVerifyCode;
     private PreferenceController mPrefs;
-    private RelativeLayout mAccountRequestSection;
-    private RelativeLayout mAccountCreateSection;
+    private View[] mAccountRequestSection;
+    private View[] mAccountCreateSection;
     private HttpRequestHandler mHttpReqHandler;
     private TokenBroadcastReceiver mTokenReceiver;
     private IntentFilter mTokenFilter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +48,10 @@ public class LoginActivity extends AppCompatActivity {
         mPrefs = new PreferenceController(this);
         mPhoneEdit = (EditText) findViewById(R.id.phone_number_input);
         mVerifyCode = (EditText) findViewById(R.id.verification_code_input);
-        mAccountRequestSection = (RelativeLayout) findViewById(R.id.account_request_section);
-        mAccountCreateSection = (RelativeLayout) findViewById(R.id.account_create_section);
+        mAccountRequestSection = new View[] {findViewById(R.id.phone_number_prompt),
+                findViewById(R.id.account_request_btn)};
+        mAccountCreateSection = new View[] {findViewById(R.id.verification_code_prompt),
+               findViewById(R.id.account_create_btn)};
         mHttpReqHandler = new HttpRequestHandler(this);
 
         mTokenFilter = new IntentFilter(Constants.TOKEN_BROADCAST);
@@ -98,11 +98,15 @@ public class LoginActivity extends AppCompatActivity {
         Animation out_anim = AnimationUtils.loadAnimation(this, R.anim.out_to_left);
         Animation in_anim = AnimationUtils.loadAnimation(this, R.anim.in_from_right);
 
-        mAccountCreateSection.startAnimation(in_anim);
-        mAccountCreateSection.setVisibility(View.VISIBLE);
+        for (View v : mAccountCreateSection) {
+            v.startAnimation(in_anim);
+            v.setVisibility(View.VISIBLE);
+        }
 
-        mAccountRequestSection.startAnimation(out_anim);
-        mAccountRequestSection.setVisibility(View.GONE);
+        for (View v : mAccountRequestSection) {
+            v.startAnimation(out_anim);
+            v.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -154,11 +158,15 @@ public class LoginActivity extends AppCompatActivity {
         Animation out_anim = AnimationUtils.loadAnimation(this, R.anim.out_to_right);
         Animation in_anim = AnimationUtils.loadAnimation(this, R.anim.in_from_left);
 
-        mAccountRequestSection.startAnimation(in_anim);
-        mAccountRequestSection.setVisibility(View.VISIBLE);
+        for (View v : mAccountRequestSection) {
+            v.startAnimation(in_anim);
+            v.setVisibility(View.VISIBLE);
+        }
 
-        mAccountCreateSection.startAnimation(out_anim);
-        mAccountCreateSection.setVisibility(View.GONE);
+        for (View v : mAccountCreateSection) {
+            v.startAnimation(out_anim);
+            v.setVisibility(View.GONE);
+        }
     }
 
     /**

@@ -1,26 +1,50 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:background="#F8F7F3">
+    android:background="@color/lightGray"
+    android:orientation="vertical"
+    android:gravity="center_horizontal" >
 
     <ImageView
         android:id="@+id/logo"
         android:contentDescription="@string/logo_description"
-        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:src="@drawable/logo" />
+        android:layout_width="match_parent"
+        android:src="@drawable/home_logo"
+        android:layout_weight="1" />
 
-    <RelativeLayout
-        android:id="@+id/account_request_section"
+    <xyz.whereuat.whereuat.ui.views.LatoTextView
+        android:id="@+id/logo_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:lato_font="light"
+        android:textSize="@dimen/logo_font_size"
+        android:text="@string/app_name"
+        android:textColor="@color/coolRed"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:id="@+id/phone_number_prompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/logo">
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_horizontal" >
+
+        <xyz.whereuat.whereuat.ui.views.LatoTextView
+            android:id="@+id/phone_number_prompt_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/phone_number_input_prompt"
+            app:lato_font="light"
+            android:textColor="@color/coolRed"
+            android:layout_marginBottom="@dimen/spacing_margin"
+            android:textSize="@dimen/lato_prompt_font_size" />
+
         <EditText
             android:id="@+id/phone_number_input"
             android:background="@drawable/textinputborder"
@@ -28,30 +52,49 @@
             android:gravity="center"
             android:hint="@string/phone_number_input_text"
             android:inputType="phone"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerHorizontal="true"
             android:layout_height="@dimen/text_input_height"
             android:layout_width="wrap_content"
+            android:paddingStart="@dimen/edittext_horiz_padding"
+            android:paddingEnd="@dimen/edittext_horiz_padding"
             android:textColor="@color/offBlack" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/account_request_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical"
+        android:gravity="center_horizontal" >
+
         <Button
-            android:id="@+id/account_request_btn"
             android:background="@color/coolRed"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:onClick="requestAccount"
             android:text="@string/account_request_btn_text"
+            android:textAllCaps="false"
             android:textColor="@color/offWhite" />
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/account_create_section"
+    <LinearLayout
+        android:id="@+id/verification_code_prompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/logo"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
         android:visibility="gone">
+        <xyz.whereuat.whereuat.ui.views.LatoTextView
+            android:id="@+id/verification_code_prompt_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/verification_code_input_prompt"
+            app:lato_font="light"
+            android:textColor="@color/coolRed"
+            android:layout_marginBottom="@dimen/spacing_margin"
+            android:textSize="@dimen/lato_prompt_font_size"/>
+
         <EditText
             android:id="@+id/verification_code_input"
             android:background="@drawable/textinputborder"
@@ -59,21 +102,29 @@
             android:gravity="center"
             android:hint="@string/verification_input_text"
             android:inputType="numberDecimal"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerHorizontal="true"
             android:layout_height="@dimen/text_input_height"
             android:layout_width="wrap_content"
+            android:paddingStart="@dimen/edittext_horiz_padding"
+            android:paddingEnd="@dimen/edittext_horiz_padding"
             android:textColor="@color/offBlack" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/account_create_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+
         <Button
-            android:id="@+id/account_create_btn"
             android:background="@color/coolRed"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:onClick="createNewAccount"
             android:text="@string/account_create_btn_text"
+            android:textAllCaps="false"
             android:textColor="@color/offWhite" />
-    </RelativeLayout>
-</RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

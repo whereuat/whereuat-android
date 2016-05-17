@@ -19,6 +19,7 @@ public class LatoTextView extends TextView {
     public static final int BOLD = 0;
     public static final int REGULAR= 1;
     public static final int SEMIBOLD = 2;
+    public static final int LIGHT = 3;
 
     public LatoTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,6 +36,9 @@ public class LatoTextView extends TextView {
                 break;
             case SEMIBOLD:
                 tf = Typeface.createFromAsset(context.getAssets(), "Lato-Semibold.ttf");
+                break;
+            case LIGHT:
+                tf = Typeface.createFromAsset(context.getAssets(), "Lato-Light.ttf");
                 break;
             default:
                 tf = Typeface.createFromAsset(context.getAssets(), "Lato-Regular.ttf");

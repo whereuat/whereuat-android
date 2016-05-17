@@ -2,8 +2,7 @@
 <resources>
     <color name="darkGray">#979797</color>
     <color name="coolRed">#F15369</color>
-    <color name="lightGray">#D8D8D8</color>
+    <color name="lightGray">#F8F7F3</color>
     <color name="offBlack">#101820</color>
     <color name="offWhite">#FAFAFA</color>
-
 </resources>

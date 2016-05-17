@@ -19,7 +19,8 @@
             android:horizontalSpacing="0dp"
             android:stretchMode="columnWidth"
             android:numColumns="2"
-            android:layout_gravity="center_vertical|end" />
+            android:layout_gravity="center_vertical|end"
+            android:background="@color/lightGray" />
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/menu"
