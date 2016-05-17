@@ -62,6 +62,10 @@ public class DrawerActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 switch (position) {
+                    case 0:
+                        DrawerActivity.this.startActivity(
+                                new Intent(DrawerActivity.this, MainActivity.class));
+                        break;
                     case 2:
                         DrawerActivity.this.startActivity(
                                 new Intent(DrawerActivity.this, PendingRequestsActivity.class));
