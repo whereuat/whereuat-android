@@ -41,12 +41,12 @@ public class ContactCard extends ViewFlipper {
         this.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View click) {
-                // Make a Toast to provide user feedback that a request was at least attempted.
-                Toast.makeText(context, "Sending whereu@...", Toast.LENGTH_LONG).show();
-
                 // The back view shouldn't do anything if it's clicked.
                 if (ContactCard.this.getCurrentView().getId() == R.id.back_view)
                     return;
+
+                // Make a Toast to provide user feedback that a request was at least attempted.
+                Toast.makeText(context, "Sending whereu@...", Toast.LENGTH_LONG).show();
 
                 AsyncExecutor.service.submit(new Runnable() {
                     @Override
