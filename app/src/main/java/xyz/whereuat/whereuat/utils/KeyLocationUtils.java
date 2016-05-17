@@ -178,11 +178,10 @@ public class KeyLocationUtils {
      * Method to build a command to select all key locations
      *
      * @param context Context to build the command
-     * @param select_cols Columns to be included in the query's result
      * @return QueryCommand to query over all of the key locations
      */
-    public static QueryCommand buildSelectAllCommand(Context context, String[] select_cols) {
-        return new QueryCommand(context, KeyLocationEntry.TABLE_NAME, false, select_cols, null,
-                null, null, null, null, null);
+    public static QueryCommand buildSelectAllCommand(Context context) {
+        return new QueryCommand(context, KeyLocationEntry.TABLE_NAME, false,
+                KeyLocationEntry.COLUMNS, null, null, null, null, null, null);
     }
 }

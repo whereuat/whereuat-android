@@ -111,9 +111,7 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
             // off the UI thread.
             @Override
             public Cursor loadInBackground() {
-                return (Cursor) ContactUtils.buildSelectAllCommand(MainActivity.this,
-                        new String[] {ContactEntry.COLUMN_NAME, ContactEntry.COLUMN_AUTOSHARE,
-                                ContactEntry._ID, ContactEntry.COLUMN_COLOR}).call();
+                return (Cursor) ContactUtils.buildSelectAllCommand(MainActivity.this).call();
             }
         };
     }
@@ -274,12 +272,8 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
                             MainActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    String[] select_cols = {ContactEntry.COLUMN_NAME,
-                                            ContactEntry.COLUMN_AUTOSHARE,
-                                            ContactEntry._ID,
-                                            ContactEntry.COLUMN_COLOR};
                                     Cursor all_contacts = ContactUtils.buildSelectAllCommand(
-                                            context, select_cols).call();
+                                            context).call();
                                     try {
                                         mAdapter.swapCursor(all_contacts);
                                     } catch (NullPointerException e) {

@@ -15,6 +15,8 @@ public final class ContactEntry implements BaseColumns {
     public static final String COLUMN_PHONE = "phone";
     public static final String COLUMN_AUTOSHARE = "autoshare";
     public static final String COLUMN_COLOR = "color";
+    public static final String[] COLUMNS = new String[] {COLUMN_AUTOSHARE, COLUMN_COLOR,
+            COLUMN_NAME, COLUMN_PHONE, _ID};
 
     public ContactEntry() { }
 

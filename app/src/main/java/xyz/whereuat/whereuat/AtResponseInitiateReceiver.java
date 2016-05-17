@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import xyz.whereuat.whereuat.db.entry.KeyLocationEntry;
 import xyz.whereuat.whereuat.utils.HttpRequestHandler;
 import xyz.whereuat.whereuat.utils.KeyLocationUtils;
 import xyz.whereuat.whereuat.utils.LocationProviderService;
@@ -40,10 +39,7 @@ public class AtResponseInitiateReceiver extends BroadcastReceiver {
             public void run() {
                 Location loc = LocationProviderService.getLocation();
 
-                String[] select_cols = {KeyLocationEntry.COLUMN_NAME,
-                        KeyLocationEntry.COLUMN_LATITUDE, KeyLocationEntry.COLUMN_LONGITUDE};
-                Cursor all_locs = KeyLocationUtils.buildSelectAllCommand(context, select_cols)
-                        .call();
+                Cursor all_locs = KeyLocationUtils.buildSelectAllCommand(context).call();
                 KeyLocationUtils.KeyLocation key_loc =
                         all_locs.getCount() == 0 ? new KeyLocationUtils.KeyLocation() :
                                 KeyLocationUtils.findNearestLoc(all_locs, loc);

@@ -14,6 +14,8 @@ public final class KeyLocationEntry implements BaseColumns {
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_LATITUDE = "lat";
     public static final String COLUMN_LONGITUDE = "lng";
+    public static final String[] COLUMNS = new String[] {COLUMN_LATITUDE, COLUMN_LONGITUDE,
+            COLUMN_NAME, _ID};
 
     public KeyLocationEntry() { }
 

@@ -106,12 +106,11 @@ public class ContactUtils {
      * Method to build a command to select all contacts
      *
      * @param context Context to build the command
-     * @param select_cols Columns to be included in the query's result
      * @return QueryCommand to query over all of the contacts
      */
-    public static QueryCommand buildSelectAllCommand(Context context, String[] select_cols) {
-        return new QueryCommand(context, ContactEntry.TABLE_NAME, false, select_cols, null, null,
-                                null, null, null, null);
+    public static QueryCommand buildSelectAllCommand(Context context) {
+        return new QueryCommand(context, ContactEntry.TABLE_NAME, false, ContactEntry.COLUMNS, null,
+                null, null, null, null, null);
     }
 
     /**
