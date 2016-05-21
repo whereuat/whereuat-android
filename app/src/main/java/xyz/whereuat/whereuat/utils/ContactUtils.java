@@ -6,6 +6,9 @@ import android.graphics.Color;
 
 import java.util.Random;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.db.command.QueryCommand;
 import xyz.whereuat.whereuat.db.command.UpdateCommand;
@@ -139,5 +142,37 @@ public class ContactUtils {
     public static UpdateCommand buildUpdateCommand(Context context, ContentValues cv, String where,
                                                    String[] where_args) {
         return new UpdateCommand(context, ContactEntry.TABLE_NAME, cv, where, where_args);
+    }
+
+    /**
+     * Method to get parse initials from a name
+     *
+     * @param name Name to parse initials from
+     * @return String containing the first and last initials of the name
+     */
+    public static String getInitials(String name) {
+        final LinkedList<String> prefixes = new LinkedList<>(Arrays.asList("ms", "miss", "mrs",
+                "mr", "rev", "fr", "dr", "doctor", "atty", "prof", "professor", "hon", "pres",
+                "gov", "coach", "ofc", "officer", "sir"));
+        final LinkedList<String> suffixes = new LinkedList<>(Arrays.asList("cpa", "md", "esq", "jr",
+                "sr", "phd", "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi",
+                "xii", "xiii", "xiv", "xv"));
+        String initials = "";
+        String cleaned_name = name.toLowerCase().replaceAll("\\.", "");
+        LinkedList<String> split_name = new LinkedList<>(Arrays.asList(cleaned_name.split(" ")));
+        while (split_name.size() > 0 && prefixes.contains(split_name.getFirst())) {
+            split_name.removeFirst();
+        }
+        while(split_name.size() > 0 && suffixes.contains(split_name.getLast())) {
+            split_name.removeLast();
+        }
+
+        if (split_name.size() > 0) {
+                initials += split_name.getFirst().charAt(0);
+            if (split_name.size() > 1) {
+                initials += split_name.getLast().charAt(0);
+            }
+        }
+        return initials.toUpperCase();
     }
 }

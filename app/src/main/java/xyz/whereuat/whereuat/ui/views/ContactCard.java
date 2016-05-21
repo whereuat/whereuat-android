@@ -109,7 +109,7 @@ public class ContactCard extends ViewFlipper {
         View front_view = this.findViewById(R.id.front_view);
         ((LatoTextView) front_view.findViewById(R.id.front_view_fullname)).setText(name);
         ((LatoTextView) front_view.findViewById(R.id.front_view_initials)).setText(
-                getInitials(name));
+                ContactUtils.getInitials(name));
         front_view.setBackgroundColor(color);
 
         // Set the name of the contact on the back of the card.
@@ -124,19 +124,5 @@ public class ContactCard extends ViewFlipper {
         // Set the tag on the ContactCard to be the contact's id in the database so the
         // id can be used later to query the database.
         this.setTag(id);
-    }
-
-    // TODO: Flesh this function out once contacts are being pulled from the DB.
-    private String getInitials(String name) {
-        String[] names = name.split(" ");
-        if (names.length == 2) {
-            return String.format("%c%c", getFirstInitial(names[0]), getFirstInitial(names[1]));
-        }
-        return "XX";
-    }
-
-    private char getFirstInitial(String name) {
-        if (name.length() < 0) return 'X';
-        return Character.toUpperCase(name.charAt(0));
     }
 }
