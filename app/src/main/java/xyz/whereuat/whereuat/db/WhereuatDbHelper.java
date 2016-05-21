@@ -8,8 +8,8 @@ import android.util.Log;
 import java.util.AbstractMap.SimpleEntry;
 
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
+import xyz.whereuat.whereuat.db.entry.ContactRequestEntry;
 import xyz.whereuat.whereuat.db.entry.KeyLocationEntry;
-import xyz.whereuat.whereuat.db.entry.PendingRequestEntry;
 
 /**
  * <p>The WhereuatDbHelper class handles the creation, upgrading, and deletion of the SQLite tables
@@ -41,7 +41,7 @@ public class WhereuatDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ContactEntry.SQL_CREATE_ENTRIES);
         db.execSQL(KeyLocationEntry.SQL_CREATE_ENTRIES);
-        db.execSQL(PendingRequestEntry.SQL_CREATE_ENTRIES);
+        db.execSQL(ContactRequestEntry.SQL_CREATE_ENTRIES);
     }
 
     /**
@@ -56,7 +56,7 @@ public class WhereuatDbHelper extends SQLiteOpenHelper {
         // to simply to discard the data and start over
         db.execSQL(ContactEntry.SQL_DELETE_ENTRIES);
         db.execSQL(KeyLocationEntry.SQL_DELETE_ENTRIES);
-        db.execSQL(PendingRequestEntry.SQL_DELETE_ENTRIES);
+        db.execSQL(ContactRequestEntry.SQL_DELETE_ENTRIES);
         onCreate(db);
     }
 

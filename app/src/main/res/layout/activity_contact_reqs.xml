@@ -12,7 +12,7 @@
         <include layout="@layout/toolbar"/>
 
         <ListView
-            android:id="@+id/pending_reqs_list"
+            android:id="@+id/contact_reqs_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="?attr/actionBarSize"/>

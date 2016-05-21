@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/pending_req_item"
+    android:id="@+id/contact_req_item"
     android:background="@color/lightGray"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/spacing_margin"
     android:weightSum="1">
     <RelativeLayout
-        android:id="@+id/pending_req_list_item_info"
+        android:id="@+id/contact_req_list_item_info"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/spacing_margin_wide"
         android:layout_marginLeft="@dimen/spacing_margin"
@@ -17,7 +17,7 @@
         android:layout_weight="0.8"
         android:layout_width="0px">
         <xyz.whereuat.whereuat.ui.views.LatoTextView
-            android:id="@+id/pending_req_contact_name"
+            android:id="@+id/contact_req_contact_name"
             android:ellipsize="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:id="@+id/pending_req_contact_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/pending_req_contact_name"
+            android:layout_below="@+id/contact_req_contact_name"
             android:textColor="@color/darkGray"
             android:textSize="12sp" />
     </RelativeLayout>
@@ -37,7 +37,7 @@
     <ImageView
         android:id="@+id/add_btn"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/add_pending_req_description"
+        android:contentDescription="@string/add_contact_req_description"
         android:layout_height="match_parent"
         android:layout_marginEnd="@dimen/spacing_margin_extra_wide"
         android:layout_marginRight="@dimen/spacing_margin_extra_wide"
@@ -49,7 +49,7 @@
     <ImageView
         android:id="@+id/delete_btn"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/delete_pending_req_description"
+        android:contentDescription="@string/delete_contact_req_description"
         android:layout_height="match_parent"
         android:layout_weight="0.1"
         android:layout_width="0px"

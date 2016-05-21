@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:theme="@style/DialogTheme">
+
+    <EditText
+        android:id="@+id/contact_name_input"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/keyloc_dialog_edittext_minwidth"
+        android:layout_margin="@dimen/spacing_margin_wide"
+        android:hint="@string/add_contact_prompt_hint_text" />
+</LinearLayout>

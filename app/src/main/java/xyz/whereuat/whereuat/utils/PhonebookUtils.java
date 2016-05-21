@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.Contacts;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -34,7 +37,7 @@ public class PhonebookUtils {
         String[] projection = {Phone.DISPLAY_NAME, Phone.NUMBER};
         String sel = String.format("%s = %s", Phone.TYPE, Phone.TYPE_MOBILE);
         Cursor c =  context.getContentResolver().query(contact_data, projection, sel, null, null);
-        if (c != null) {
+        if (c.moveToFirst()) {
             if (c.moveToFirst()) {
                 String name = c.getString(c.getColumnIndex(Phone.DISPLAY_NAME));
                 String phone = convertToE164(c.getString(c.getColumnIndex(Phone.NUMBER)));
@@ -44,6 +47,33 @@ public class PhonebookUtils {
             c.close();
         }
         return new ContactUtils.Contact();
+    }
+
+    /**
+     * Look through the phonebook for a contact with phone number |phone| and return their name if
+     * found.
+     *
+     * Note: This function runs a database command and should not be run on the UI thread.
+     *
+     * @param context The Context for the query to use.
+     * @param phone The phone number being searched for.
+     * @return The name of the contact with phone number |phone|.
+     */
+    @NonNull
+    public static String queryPhonebookForContactName(Context context, String phone) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, phone);
+        Cursor cursor = context.getContentResolver().query(uri,
+                new String[] {ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+
+        String name = "";
+
+        if (cursor.moveToFirst()) {
+            name = cursor.getString(cursor.getColumnIndex(
+                    ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        cursor.close();
+
+        return name;
     }
 
     /**

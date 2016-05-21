@@ -13,6 +13,7 @@ import java.util.Random;
 
 import xyz.whereuat.whereuat.AsyncExecutor;
 import xyz.whereuat.whereuat.Constants;
+import xyz.whereuat.whereuat.ContactRequestsActivity;
 import xyz.whereuat.whereuat.MainActivity;
 import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
@@ -75,6 +76,19 @@ public class NotificationUtils {
                 }
             }
         });
+    }
+
+    /**
+     * Send a notification that shows that an unknown number sent the client an AtRequest. On click,
+     * the notification redirects to the contact requests activity.
+     *
+     * @param context the context that triggered the notification
+     * @param from_phone the number that sent the request
+     */
+    public static void sendPendingRequestNotification(Context context, String from_phone) {
+        sendNotification(context, ContactRequestsActivity.class,
+                (new Random()).nextInt(Integer.MAX_VALUE),
+                String.format("%s: whereu@?", from_phone), true, null);
     }
 
     /**

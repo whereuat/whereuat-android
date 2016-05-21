@@ -2,11 +2,12 @@ package xyz.whereuat.whereuat;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
@@ -16,6 +17,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,8 +27,6 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
-
-import java.util.Random;
 
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 import xyz.whereuat.whereuat.ui.adapters.ContactCardCursorAdapter;
@@ -44,6 +44,8 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
         LoaderManager.LoaderCallbacks<Cursor> {
     private FloatingActionMenu mMenu;
     private ContactCardCursorAdapter mAdapter;
+    private ReloadContactsReceiver mReloadContactsReceiver;
+    private IntentFilter mReloadContactsFilter;
 
     private static final String TAG = "MainActivity";
 
@@ -53,7 +55,7 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
         setContentView(R.layout.activity_main);
 
         mMenu = (FloatingActionMenu) findViewById(R.id.menu);
-        initDrawer();
+        initDrawer(getString(R.string.app_name));
         initContactGrid();
         initPermissionRequests();
 
@@ -61,6 +63,9 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
         // get locations ASAP.
         Intent intent = new Intent(this, LocationProviderService.class);
         this.startService(intent);
+
+        mReloadContactsReceiver = new ReloadContactsReceiver();
+        mReloadContactsFilter = new IntentFilter(Constants.RELOAD_CONTACTS_BROADCAST);
     }
 
     /**
@@ -134,7 +139,15 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
     }
 
     @Override
+    public void onResume() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReloadContactsReceiver,
+                mReloadContactsFilter);
+        super.onResume();
+    }
+
+    @Override
     protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReloadContactsReceiver);
         mMenu.close(false);
         super.onPause();
     }
@@ -265,7 +278,7 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
                     boolean exists = contact.getCount() > 0;
                     if (!exists) {
                         Long result = ContactUtils.buildInsertCommand(context, name, phone,
-                                false, generateRandomColor()).call();
+                                false, ContactUtils.generateRandomColor()).call();
                         if (result != -1) {
                             Log.d(TAG, "Successfully inserted");
 
@@ -301,15 +314,27 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
         }
     }
 
-    private int generateRandomColor() {
-        Random rnd = new Random();
-        // A number between 0 and 360.
-        float hue = rnd.nextInt(360);
-        // The multiplier keeps the value in a range, the addition keeps the number farther from 0
-        // so colors that are almost black aren't generated.
-        float value = rnd.nextFloat() * 0.4f + 0.4f;
-        // Keep the saturation constant at 0.3.
-        return Color.HSVToColor(new float[] {hue, 0.3f, value});
+    /**
+     * This function is so other classes can notify this activity that the contacts have changed
+     * and should be reloaded.
+     *
+     * @param context the context that is notifying the change
+     */
+    public static void notifyOfContactChange(Context context) {
+        Intent intent = new Intent(Constants.RELOAD_CONTACTS_BROADCAST);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    /**
+     * This receiver reloads the GridView of contacts whenever it receives a new broadcast. This
+     * class is necessary so other parts of the application can trigger a cursor reload so the UI
+     * updates.
+     */
+    class ReloadContactsReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mAdapter.swapCursor(ContactUtils.buildSelectAllCommand(context).call());
+        }
     }
 }
 

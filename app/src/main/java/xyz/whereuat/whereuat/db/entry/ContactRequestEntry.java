@@ -9,8 +9,8 @@ import xyz.whereuat.whereuat.db.WhereuatDbHelper;
 /**
  * Created by julius on 5/13/16.
  */
-public class PendingRequestEntry implements BaseColumns {
-    public static final String TABLE_NAME = "pending_requests";
+public class ContactRequestEntry implements BaseColumns {
+    public static final String TABLE_NAME = "contact_requests";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_PHONE = "phone";
     public static final String[] COLUMNS = new String[] {COLUMN_NAME, COLUMN_PHONE, _ID};

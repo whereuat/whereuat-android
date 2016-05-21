@@ -12,17 +12,20 @@
     <string name="key_location_prompt_hint_text">Current location name</string>
     <string name="duplicate_location_prompt_title_text">Duplicate location name</string>
     <string name="duplicate_location_body_text">You already have a key location called \"%s\". Are you sure you want to create another one?</string>
+    <string name="add_contact_prompt_title_text">Add a new contact</string>
+    <string name="add_contact_prompt_hint_text">Contact name</string>
     <string name="okay">Okay</string>
     <string name="cancel">Cancel</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
-    <string name="delete_pending_req_description">Delete a pending request.</string>
-    <string name="add_pending_req_description">Add a contact with a pending request.</string>
+    <string name="delete_contact_req_description">Delete a pending contact request.</string>
+    <string name="add_contact_req_description">Add a contact with a pending request.</string>
+    <string name="contact_requests">Contact Requests</string>
 
     <string-array name="drawer_items">
         <item>Home</item>
         <item>Key Locations</item>
-        <item>Pending Requests</item>
+        <item>Contact Requests</item>
         <item>Settings</item>
     </string-array>
     <array name="drawer_icons">

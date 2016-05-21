@@ -37,8 +37,9 @@ public class DrawerActivity extends AppCompatActivity {
      *       The initDrawer logic cannot go into onCreate because the activity will not have its
      *       content view set yet, which is necessary for findViewById calls.
      */
-    protected void initDrawer() {
+    protected void initDrawer(String toolbar_title) {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        ((LatoTextView) mToolbar.findViewById(R.id.toolbar_title)).setText(toolbar_title);
         setSupportActionBar(mToolbar);
 
         ((LatoTextView) findViewById(R.id.drawer_phone)).setText(
@@ -68,7 +69,7 @@ public class DrawerActivity extends AppCompatActivity {
                         break;
                     case 2:
                         DrawerActivity.this.startActivity(
-                                new Intent(DrawerActivity.this, PendingRequestsActivity.class));
+                                new Intent(DrawerActivity.this, ContactRequestsActivity.class));
                 }
             }
         });
