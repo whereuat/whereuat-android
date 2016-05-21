@@ -43,8 +43,13 @@ public class Constants {
     public static final String CLIENT_OS = "ANDROID";
 
     // Constants for the keys in a notification.
+    public static final String GCM_TYPE_KEY = "type";
     public static final String GCM_FROM_KEY = "from-#";
     public static final String GCM_PLACE_KEY = "place";
+    public static final String GCM_LAT_KEY = "lat";
+    public static final String GCM_LNG_KEY = "lng";
+    public static final String GCM_AT_REQUEST_TYPE = "AT_REQUEST";
+    public static final String GCM_AT_RESPONSE_TYPE = "AT_RESPONSE";
 
     // Constants used for the keys in a JSON POST request.
     public static final String JSON_CLIENT_OS_KEY = "client-os";

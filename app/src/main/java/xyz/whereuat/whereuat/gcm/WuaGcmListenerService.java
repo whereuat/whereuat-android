@@ -28,6 +28,7 @@ import xyz.whereuat.whereuat.Constants;
 import xyz.whereuat.whereuat.ContactRequestsActivity;
 import xyz.whereuat.whereuat.db.entry.ContactEntry;
 import xyz.whereuat.whereuat.utils.ContactUtils;
+import xyz.whereuat.whereuat.utils.KeyLocationUtils;
 import xyz.whereuat.whereuat.utils.NotificationUtils;
 import xyz.whereuat.whereuat.utils.ContactRequestUtils;
 import xyz.whereuat.whereuat.utils.PhonebookUtils;
@@ -52,9 +53,12 @@ public class WuaGcmListenerService extends GcmListenerService {
         if (isAtRequest(data)) {
             handleAtRequest(data);
         } else if (isAtResponse(data)) {
+            KeyLocationUtils.KeyLocation loc = new KeyLocationUtils.KeyLocation(
+                    data.getString(Constants.GCM_PLACE_KEY),
+                    Double.parseDouble(data.getString(Constants.GCM_LAT_KEY)),
+                    Double.parseDouble(data.getString(Constants.GCM_LNG_KEY)));
             NotificationUtils.sendAtResponseNotification(this,
-                    data.getString(Constants.GCM_FROM_KEY),
-                    data.getString(Constants.GCM_PLACE_KEY));
+                    data.getString(Constants.GCM_FROM_KEY), loc);
         } else
             Log.d(TAG, "Bad notification received.");
     }
@@ -143,12 +147,10 @@ public class WuaGcmListenerService extends GcmListenerService {
     }
 
     private boolean isAtRequest(Bundle data) {
-        return data.getString(Constants.GCM_FROM_KEY) != null &&
-                data.getString(Constants.GCM_PLACE_KEY) == null;
+        return data.getString(Constants.GCM_TYPE_KEY).equals(Constants.GCM_AT_REQUEST_TYPE);
     }
 
     private boolean isAtResponse(Bundle data) {
-        return data.getString(Constants.GCM_FROM_KEY) != null &&
-                data.getString(Constants.GCM_PLACE_KEY) != null;
+        return data.getString(Constants.GCM_TYPE_KEY).equals(Constants.GCM_AT_RESPONSE_TYPE);
     }
 }

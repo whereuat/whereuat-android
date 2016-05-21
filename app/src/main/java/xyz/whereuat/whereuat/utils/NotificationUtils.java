@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.util.Locale;
 import java.util.Random;
 
 import xyz.whereuat.whereuat.AsyncExecutor;
@@ -23,6 +25,7 @@ import xyz.whereuat.whereuat.db.entry.ContactEntry;
  */
 public class NotificationUtils {
     private static final String TAG = "NotificationUtils";
+    private static final Integer ZOOM_FACTOR = 11;
 
     /**
      * Get the requester's name and then create a notification saying they sent an @request.
@@ -41,8 +44,10 @@ public class NotificationUtils {
                 if (c.moveToFirst()) {
                     // Extract the contact's name and use it in the notification's message.
                     String name = c.getString(c.getColumnIndex(ContactEntry.COLUMN_NAME));
-                    int notification_id = (new Random()).nextInt(Integer.MAX_VALUE);
-                    sendNotification(context, MainActivity.class, notification_id,
+                    int notification_id = new Random().nextInt(Integer.MAX_VALUE);
+                    PendingIntent pending_intent = activityPendingIntent(context,
+                            MainActivity.class, notification_id);
+                    sendNotification(context, pending_intent, notification_id,
                             String.format("%s: whereu@?", name), false,
                             createAtRequestAction(context, notification_id, from_phone));
                 } else {
@@ -59,7 +64,7 @@ public class NotificationUtils {
      * @param loc a String of the name of the location
      */
     public static void sendAtResponseNotification(final Context context, final String from_phone,
-                                                  final String loc) {
+                                                  final KeyLocationUtils.KeyLocation loc) {
         // Once the query has completed, create the notification.
         AsyncExecutor.service.submit(new Runnable() {
             @Override
@@ -68,9 +73,14 @@ public class NotificationUtils {
                         new String[] {ContactEntry.COLUMN_NAME}).call();
                 if (c.moveToFirst()) {
                     String name = c.getString(c.getColumnIndex(ContactEntry.COLUMN_NAME));
-                    sendNotification(context, MainActivity.class,
-                            (new Random()).nextInt(Integer.MAX_VALUE),
-                            String.format("%s is @ %s", name, loc), true, null);
+                    int notification_id = new Random().nextInt(Integer.MAX_VALUE);
+                    String map_uri = String.format(Locale.ENGLISH, "geo:0,0?q=%f,%f?z=%d",
+                            loc.loc.getLatitude(), loc.loc.getLongitude(), ZOOM_FACTOR);
+                    PendingIntent pending_intent = PendingIntent.getActivity(context,
+                            notification_id, new Intent(Intent.ACTION_VIEW, Uri.parse(map_uri)),
+                            PendingIntent.FLAG_ONE_SHOT);
+                    sendNotification(context, pending_intent, notification_id,
+                            String.format("%s is @ %s", name, loc.name), true, null);
                 } else {
                     Log.d(TAG, "Couldn't retrieve the client from the db.");
                 }
@@ -86,29 +96,43 @@ public class NotificationUtils {
      * @param from_phone the number that sent the request
      */
     public static void sendPendingRequestNotification(Context context, String from_phone) {
-        sendNotification(context, ContactRequestsActivity.class,
-                (new Random()).nextInt(Integer.MAX_VALUE),
+        int notification_id = new Random().nextInt(Integer.MAX_VALUE);
+        PendingIntent pending_intent = activityPendingIntent(context, ContactRequestsActivity.class,
+                notification_id);
+        sendNotification(context, pending_intent, notification_id,
                 String.format("%s: whereu@?", from_phone), true, null);
+    }
+
+    /**
+     * Converts an Activity class to a PendingIntent so that it can be fired when clicking on a push
+     * notification
+     *
+     * @param context the context that the notification is sent from
+     * @param activity_class the activity that should be opened when the notification is clicked
+     * @param notification_id the id of the notification, which should match the id in |action|
+     * @return the pending intent to be passed into the push notification builder
+     */
+    private static PendingIntent activityPendingIntent(Context context, Class<?> activity_class,
+                                                       int notification_id) {
+        Intent intent = new Intent(context, activity_class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(context, notification_id, intent,
+                PendingIntent.FLAG_ONE_SHOT);
     }
 
     /**
      * Sends a notification to the Android system.
      *
      * @param context the context that the notification is sent from
-     * @param activity_class the activity that should be opened when the notification is clicked
+     * @param pending_intent the pending intent that should fire when the notification is clicked
      * @param notification_id the id of the notification, which should match the id in |action|
      * @param message the text in the notification
      * @param action the actions that should be set on the notification
      */
-    private static void sendNotification(Context context, Class<?> activity_class,
+    private static void sendNotification(Context context, PendingIntent pending_intent,
                                          int notification_id, String message,
                                          boolean should_auto_cancel,
                                          NotificationCompat.Action action) {
-        Intent intent = new Intent(context, activity_class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pending_intent = PendingIntent.getActivity(context, notification_id, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
         NotificationCompat.Builder notification_builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_stat_ic_notification)
                 .setContentTitle(context.getResources().getString(R.string.app_name))
