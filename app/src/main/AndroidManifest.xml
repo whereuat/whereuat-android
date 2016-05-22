@@ -43,6 +43,10 @@
             android:name=".ContactRequestsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".SettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

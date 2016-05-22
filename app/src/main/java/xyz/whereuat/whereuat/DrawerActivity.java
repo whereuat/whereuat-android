@@ -70,6 +70,11 @@ public class DrawerActivity extends AppCompatActivity {
                     case 2:
                         DrawerActivity.this.startActivity(
                                 new Intent(DrawerActivity.this, ContactRequestsActivity.class));
+                        break;
+                    case 3:
+                        DrawerActivity.this.startActivity(
+                                new Intent(DrawerActivity.this, SettingsActivity.class));
+                        break;
                 }
             }
         });

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">whereu@</string>
-    <string name="action_settings">Settings</string>
+    <string name="version_number">V1.0</string>
     <string name="verification_code_input_prompt">enter your verification code here</string>
     <string name="verification_input_text">XXXXX</string>
     <string name="phone_number_input_prompt">enter your phone number here</string>
@@ -21,6 +21,7 @@
     <string name="delete_contact_req_description">Delete a pending contact request.</string>
     <string name="add_contact_req_description">Add a contact with a pending request.</string>
     <string name="contact_requests">Contact Requests</string>
+    <string name="settings">Settings</string>
 
     <string-array name="drawer_items">
         <item>Home</item>
