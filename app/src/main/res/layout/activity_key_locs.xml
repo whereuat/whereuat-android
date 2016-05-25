@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:background="@color/lightGray"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/toolbar"/>
+
+        <ListView
+            android:id="@+id/key_locs_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="?attr/actionBarSize"/>
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_menu"
+            fab:menu_fab_size="normal"
+            fab:menu_colorNormal="@color/coolRed">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/menu_add_key_loc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="showKeyLocDialog"
+                android:src="@drawable/ic_add_location"
+                fab:fab_size="mini"
+                fab:fab_colorNormal="@color/coolRed"
+                fab:fab_label="Add Key Location"/>
+        </com.github.clans.fab.FloatingActionMenu>
+    </FrameLayout>
+
+    <include layout="@layout/drawer" />
+
+</android.support.v4.widget.DrawerLayout>

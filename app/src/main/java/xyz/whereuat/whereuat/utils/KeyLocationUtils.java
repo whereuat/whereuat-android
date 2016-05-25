@@ -9,8 +9,10 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import xyz.whereuat.whereuat.db.command.DeleteCommand;
 import xyz.whereuat.whereuat.db.command.InsertCommand;
 import xyz.whereuat.whereuat.db.command.QueryCommand;
+import xyz.whereuat.whereuat.db.command.UpdateCommand;
 import xyz.whereuat.whereuat.db.entry.KeyLocationEntry;
 
 /**
@@ -183,5 +185,29 @@ public class KeyLocationUtils {
     public static QueryCommand buildSelectAllCommand(Context context) {
         return new QueryCommand(context, KeyLocationEntry.TABLE_NAME, false,
                 KeyLocationEntry.COLUMNS, null, null, null, null, null, null);
+    }
+
+    /**
+     * Method to build a command to update a key location name by the key location's id in the
+     * database.
+     *
+     * @param context the context to build the command
+     * @param id the id of the key location to be updated
+     * @param new_name the new name of the key location to update
+     * @return UpdateCommand to update the desired key location's name
+     */
+    public static UpdateCommand buildUpdateNameByIdCommand(Context context, Integer id,
+                                                           String new_name) {
+        String where = String.format("%s=?", KeyLocationEntry._ID);
+        ContentValues values = new ContentValues();
+        values.put(KeyLocationEntry.COLUMN_NAME, new_name);
+        return new UpdateCommand(context, KeyLocationEntry.TABLE_NAME, values, where,
+                new String[] {id.toString()});
+    }
+
+    public static DeleteCommand buildDeleteByIdCommand(Context context, Integer id) {
+        String where = String.format("%s=?", KeyLocationEntry._ID);
+        return new DeleteCommand(context, KeyLocationEntry.TABLE_NAME, where,
+                new String[] {id.toString()});
     }
 }

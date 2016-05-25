@@ -26,6 +26,7 @@ public class Constants {
     public static final String TO_PHONE_EXTRA = "TO_PHONE_EXTRA";
 
     public static final String CONTACT_NUMBER_BUNDLE_EXTRA = "CONTACT_NUMBER_BUNDLE_EXTRA";
+    public static final String KEY_LOC_ID_BUNDLE_EXTRA = "KEY_LOC_ID_BUNDLE_EXTRA";
 
     // Constants related to the broadcasts sent by the application.
     public static final String AT_RESPONSE_INITIATE_BROADCAST =
@@ -35,6 +36,8 @@ public class Constants {
             "xyz.whereuat.whereuat.RELOAD_CONTACT_REQS_BROADCAST";
     public static final String RELOAD_CONTACTS_BROADCAST =
             "xyz.whereuat.whereuat.RELOAD_CONTACTS_BROADCAST";
+    public static final String RELOAD_KEY_LOCS_BROADCAST =
+            "xyz.whereuat.whereuat.RELOAD_KEY_LOCS_BROADCAST";
 
     // The phone region to be used when validating phone numbers.
     public static final String DEFAULT_PHONE_REGION = "US";

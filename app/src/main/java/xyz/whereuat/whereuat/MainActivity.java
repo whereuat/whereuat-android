@@ -337,5 +337,3 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
         }
     }
 }
-
-

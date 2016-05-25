@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import xyz.whereuat.whereuat.AsyncExecutor;
+import xyz.whereuat.whereuat.KeyLocationActivity;
 import xyz.whereuat.whereuat.R;
 import xyz.whereuat.whereuat.utils.KeyLocationUtils;
 import xyz.whereuat.whereuat.utils.LocationProviderService;
@@ -64,6 +65,7 @@ public class KeyLocDialogFragment extends DialogFragment {
                                        Long result = KeyLocationUtils.buildInsertCommand(activity,
                                                name, loc.getLatitude(), loc.getLongitude()).call();
                                        if (result != -1) {
+                                           KeyLocationActivity.notifyOfKeyLocationChange(activity);
                                            activity.runOnUiThread(new Runnable() {
                                                @Override
                                                public void run() {

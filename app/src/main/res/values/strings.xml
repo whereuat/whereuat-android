@@ -22,6 +22,9 @@
     <string name="add_contact_req_description">Add a contact with a pending request.</string>
     <string name="contact_requests">Contact Requests</string>
     <string name="settings">Settings</string>
+    <string name="delete_key_loc_description">Delete a key location.</string>
+    <string name="edit_key_loc_description">Edit a key location\'s name.</string>
+    <string name="key_locations">Key Locations</string>
 
     <string-array name="drawer_items">
         <item>Home</item>
