@@ -79,7 +79,8 @@ public class WuaGcmListenerService extends GcmListenerService {
                 String from_phone = data.getString(Constants.GCM_FROM_KEY);
                 Cursor contact = ContactUtils.buildSelectContactByPhoneCommand(
                         WuaGcmListenerService.this, from_phone,
-                        new String[] {ContactEntry.COLUMN_AUTOSHARE}).call();
+                        new String[] {ContactEntry.COLUMN_AUTOSHARE, ContactEntry.COLUMN_PHONE})
+                        .call();
                 // Check if the contact is already in the app.
                 if (contact.moveToFirst()) {
                     handleKnownContact(contact);
