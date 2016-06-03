@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -22,6 +24,7 @@ import java.util.regex.Pattern;
 
 import xyz.whereuat.whereuat.gcm.RegistrationIntentService;
 import xyz.whereuat.whereuat.utils.HttpRequestHandler;
+import xyz.whereuat.whereuat.utils.PhonebookUtils;
 import xyz.whereuat.whereuat.utils.PreferenceController;
 
 
@@ -30,8 +33,12 @@ import xyz.whereuat.whereuat.utils.PreferenceController;
  * account.
  */
 public class LoginActivity extends AppCompatActivity {
-    private String TAG = "LoginActivity";
-    private EditText mPhoneEdit;
+    private static final String TAG = "LoginActivity";
+    private static final int AREA_CODE_LENGTH = 3;
+    private static final int LINE_NUMBER_LENGTH = 7;
+
+    private EditText mAreaEdit;
+    private EditText mLineEdit;
     private EditText mVerifyCode;
     private PreferenceController mPrefs;
     private View[] mAccountRequestSection;
@@ -46,7 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         // Set up some member variables for objects that the activity regularly needs.
         mPrefs = new PreferenceController(this);
-        mPhoneEdit = (EditText) findViewById(R.id.phone_number_input);
+        mAreaEdit = (EditText) findViewById(R.id.area_code_input);
+        mLineEdit = (EditText) findViewById(R.id.line_number_input);
+        setAreaEditListeners();
+        setLineEditListeners();
+
         mVerifyCode = (EditText) findViewById(R.id.verification_code_input);
         mAccountRequestSection = new View[] {findViewById(R.id.phone_number_prompt),
                 findViewById(R.id.account_request_btn)};
@@ -116,8 +127,11 @@ public class LoginActivity extends AppCompatActivity {
      * @param v unused, only here so the function can be bound in the XML file
      */
     public void requestAccount(View v) {
-        String phone_number = mPhoneEdit.getText().toString();
-        if (isValidPhoneForm(phone_number)) {
+        // TODO: Actually make it pull from mAreaEdit and mLineEdit and fix isValidPhoneForm()
+        String raw_phone_number = mAreaEdit.getText().toString() + mLineEdit.getText().toString();
+        Log.d(TAG, raw_phone_number);
+        if (isValidPhoneForm(raw_phone_number)) {
+            String phone_number = PhonebookUtils.convertToE164(raw_phone_number);
             mHttpReqHandler.postAccountRequest(phone_number,
                     // If the response is successful, update the user's preference to show that they
                     // are waiting for their account to be verified and show the verification text
@@ -143,9 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                     });
             mPrefs.setClientPhoneNumberPref(phone_number);
         } else {
-            // TODO: There's a better way to handle this because the user shouldn't really have to
-            // put the string in this form.
-            String text = "The number should be in the form '+1xxxxxxxxxx'.";
+            String text = "The number should be in the form 'XXX XXX-XXXX'.";
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
         }
     }
@@ -185,10 +197,72 @@ public class LoginActivity extends AppCompatActivity {
      * @return returns true if the phone number is a valid form
      */
     private boolean isValidPhoneForm(String phone_number) {
-        String pattern = "\\+1\\d{10}";
+        String pattern = "\\d{6}-\\d{4}";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(phone_number);
         return m.find();
+    }
+
+    private void setAreaEditListeners() {
+        mAreaEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > AREA_CODE_LENGTH) {
+                    String overflow = s.subSequence(AREA_CODE_LENGTH, s.length()).toString();
+                    s.delete(AREA_CODE_LENGTH, s.length());
+                    mLineEdit.setText(overflow + mLineEdit.getText());
+                    mLineEdit.requestFocus();
+                    mLineEdit.setSelection(overflow.length());
+                }
+            }
+        });
+    }
+
+    private void setLineEditListeners() {
+        mLineEdit.addTextChangedListener(new TextWatcher() {
+            // TODO: Revert first selection position of line number entry to last position of area
+            //       code entry
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() >= LINE_NUMBER_LENGTH+1) {
+                    s.delete(LINE_NUMBER_LENGTH+1, s.length());
+                }
+                for (int i = 0; i < s.length(); i++) {
+                    if ((i != 3 || i == s.length()) && s.charAt(i) == '-') {
+                        s.delete(i, i+1);
+                    }
+                }
+                if (s.length() >= 4) {
+                    if (s.charAt(3) != '-') {
+                        s.insert(3, "-");
+                    }
+                    if (s.charAt(s.length()-1) == '-') {
+                        s.delete(s.length()-1, s.length());
+                    }
+                }
+                if (mLineEdit.getSelectionStart() == mLineEdit.getSelectionEnd() &&
+                        mLineEdit.getSelectionStart() == 0) {
+                    mAreaEdit.requestFocus();
+                    mAreaEdit.setSelection(mAreaEdit.length());
+                }
+            }
+        });
     }
 
     /**
