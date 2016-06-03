@@ -38,13 +38,14 @@ public class ContactCardCursorAdapter extends SimpleCursorAdapter {
      * @param cursor a cursor filled with data to populate the view
      */
     @Override
-    public void bindView (View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, Cursor cursor) {
         String name = cursor.getString(cursor.getColumnIndex(ContactEntry.COLUMN_NAME));
         boolean is_autoshared = cursor.getInt(cursor.getColumnIndex(
                 ContactEntry.COLUMN_AUTOSHARE)) > 0;
         int color = cursor.getInt(cursor.getColumnIndex(ContactEntry.COLUMN_COLOR));
+        int num_requests = cursor.getInt(cursor.getColumnIndex(ContactEntry.COLUMN_REQUESTS));
         int id = cursor.getInt(cursor.getColumnIndex(ContactEntry._ID));
-        ((ContactCard) view).setData(name, is_autoshared, color, id);
+        ((ContactCard) view).setData(name, is_autoshared, color, id, num_requests);
     }
 }
 

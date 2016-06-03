@@ -1,5 +1,7 @@
 package xyz.whereuat.whereuat.ui.views;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.AttributeSet;
@@ -10,6 +12,8 @@ import android.widget.ViewFlipper;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+
+import java.util.Locale;
 
 import xyz.whereuat.whereuat.AsyncExecutor;
 import xyz.whereuat.whereuat.R;
@@ -54,10 +58,35 @@ public class ContactCard extends ViewFlipper {
                         // Select the phone number of the contact with this id.
                         String contact_id = ContactCard.this.getTag().toString();
                         Cursor phone = ContactUtils.buildSelectContactByIdCommand(context,
-                                contact_id, new String[] {ContactEntry.COLUMN_PHONE}).call();
+                                contact_id, new String[] {ContactEntry.COLUMN_PHONE,
+                                        ContactEntry.COLUMN_REQUESTS}).call();
 
                         // Get the contact's phone number from the cursor and send them an @request.
                         if (phone.moveToFirst()) {
+                            ContentValues cv = new ContentValues();
+                            try {
+                                final int curr_num_requests = phone.getInt(phone
+                                        .getColumnIndexOrThrow(ContactEntry.COLUMN_REQUESTS)) + 1;
+                                cv.put(ContactEntry.COLUMN_REQUESTS, curr_num_requests);
+                                String where = String.format("%s=?", ContactEntry._ID);
+                                String[] where_args = new String[] {contact_id};
+                                ContactUtils.buildUpdateCommand(context, cv, where, where_args)
+                                        .call();
+                                ((Activity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        LatoTextView requested_text = (LatoTextView) ContactCard
+                                                .this.findViewById(R.id.requested_text);
+                                        requested_text.setText(getResources().getQuantityString(
+                                                R.plurals.request_count, curr_num_requests,
+                                                curr_num_requests));
+                                        requested_text.postInvalidate();
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
                             String to_phone = phone.getString(
                                     phone.getColumnIndex(ContactEntry.COLUMN_PHONE));
 
@@ -103,7 +132,7 @@ public class ContactCard extends ViewFlipper {
      * @param color the color for this card
      * @param id the id of the contact represented by this card, for use as the view's tag
      */
-    public void setData(String name, boolean is_autoshared, int color, int id) {
+    public void setData(String name, boolean is_autoshared, int color, int id, int num_requests) {
         // Set up the front of a card by setting the background color, name, and
         // initials.
         View front_view = this.findViewById(R.id.front_view);
@@ -114,6 +143,10 @@ public class ContactCard extends ViewFlipper {
 
         // Set the name of the contact on the back of the card.
         ((LatoTextView) this.findViewById(R.id.back_view_fullname)).setText(name);
+
+        // Set the number of requests on the back of the card.
+        ((LatoTextView) this.findViewById(R.id.requested_text)).setText(getResources()
+                .getQuantityString(R.plurals.request_count, num_requests, num_requests));
 
         // Fill the autoshare status on the front of the card if it needs to be filled.
         ((AutoShareStar) this.findViewById(R.id.auto_share_status)).setAutoShare(is_autoshared);

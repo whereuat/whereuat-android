@@ -81,7 +81,7 @@ public class AddContactDialogFragment extends DialogFragment {
                 final int num_deleted = ContactRequestUtils.buildDeleteByPhoneCommand(activity,
                         number).call();
                 final long inserted = ContactUtils.buildInsertCommand(activity, name, number,
-                        false, ContactUtils.generateRandomColor()).call();
+                        false, ContactUtils.generateRandomColor(), 0).call();
                 // Show success and failure Toasts.
                 activity.runOnUiThread(new Runnable() {
                     @Override

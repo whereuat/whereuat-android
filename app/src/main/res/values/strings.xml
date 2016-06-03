@@ -25,6 +25,10 @@
     <string name="delete_key_loc_description">Delete a key location.</string>
     <string name="edit_key_loc_description">Edit a key location\'s name.</string>
     <string name="key_locations">Key Locations</string>
+    <plurals name="request_count">
+        <item quantity="one">%d time</item>
+        <item quantity="other">%d times</item>
+    </plurals>
 
     <string-array name="drawer_items">
         <item>Home</item>

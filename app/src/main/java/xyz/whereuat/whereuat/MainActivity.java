@@ -278,7 +278,7 @@ public class MainActivity extends DrawerActivity implements OnScrollListener,
                     boolean exists = contact.getCount() > 0;
                     if (!exists) {
                         Long result = ContactUtils.buildInsertCommand(context, name, phone,
-                                false, ContactUtils.generateRandomColor()).call();
+                                false, ContactUtils.generateRandomColor(), 0).call();
                         if (result != -1) {
                             Log.d(TAG, "Successfully inserted");
 

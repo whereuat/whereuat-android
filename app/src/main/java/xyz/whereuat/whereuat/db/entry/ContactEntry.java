@@ -15,18 +15,18 @@ public final class ContactEntry implements BaseColumns {
     public static final String COLUMN_PHONE = "phone";
     public static final String COLUMN_AUTOSHARE = "autoshare";
     public static final String COLUMN_COLOR = "color";
-    public static final String[] COLUMNS = new String[] {COLUMN_AUTOSHARE, COLUMN_COLOR,
-            COLUMN_NAME, COLUMN_PHONE, _ID};
+    public static final String COLUMN_REQUESTS = "requests";
 
     public ContactEntry() { }
 
     public static final String SQL_CREATE_ENTRIES =
             WhereuatDbHelper.createTableSql(TABLE_NAME,
-                                         new SimpleEntry<>(_ID, "INTEGER PRIMARY KEY"),
-                                         new SimpleEntry<>(COLUMN_NAME, "VARCHAR"),
-                                         new SimpleEntry<>(COLUMN_PHONE, "VARCHAR"),
-                                         new SimpleEntry<>(COLUMN_AUTOSHARE, "BOOLEAN"),
-                                         new SimpleEntry<>(COLUMN_COLOR, "INT"));
+                    new SimpleEntry<>(_ID, "INTEGER PRIMARY KEY"),
+                    new SimpleEntry<>(COLUMN_NAME, "VARCHAR"),
+                    new SimpleEntry<>(COLUMN_PHONE, "VARCHAR"),
+                    new SimpleEntry<>(COLUMN_AUTOSHARE, "BOOLEAN"),
+                    new SimpleEntry<>(COLUMN_COLOR, "INT"),
+                    new SimpleEntry<>(COLUMN_REQUESTS, "INT"));
 
     public static final String SQL_DELETE_ENTRIES =
             WhereuatDbHelper.dropTableIfExistsSql(TABLE_NAME);

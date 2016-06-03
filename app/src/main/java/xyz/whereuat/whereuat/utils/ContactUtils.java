@@ -76,12 +76,13 @@ public class ContactUtils {
      * @return InsertCommand to insert the given contact
      */
     public static InsertCommand buildInsertCommand(Context context, String name, String phone,
-                                                   boolean autoshare, int color) {
+                                                   boolean autoshare, int color, int num_requests) {
         ContentValues values = new ContentValues();
         values.put(ContactEntry.COLUMN_NAME, name);
         values.put(ContactEntry.COLUMN_PHONE, phone);
         values.put(ContactEntry.COLUMN_AUTOSHARE, autoshare);
         values.put(ContactEntry.COLUMN_COLOR, color);
+        values.put(ContactEntry.COLUMN_REQUESTS, num_requests);
 
         return new InsertCommand(context, ContactEntry.TABLE_NAME, null, values);
     }
@@ -126,7 +127,7 @@ public class ContactUtils {
      * @return QueryCommand to query over all of the contacts
      */
     public static QueryCommand buildSelectAllCommand(Context context) {
-        return new QueryCommand(context, ContactEntry.TABLE_NAME, false, ContactEntry.COLUMNS, null,
+        return new QueryCommand(context, ContactEntry.TABLE_NAME, false, null, null,
                 null, null, null, null, null);
     }
 

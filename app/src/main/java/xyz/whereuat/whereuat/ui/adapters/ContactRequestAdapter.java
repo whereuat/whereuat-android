@@ -100,7 +100,7 @@ public class ContactRequestAdapter extends SimpleCursorAdapter {
                 final int num_deleted = ContactRequestUtils.buildDeleteByPhoneCommand(context,
                         number).call();
                 final long inserted = ContactUtils.buildInsertCommand(context, name, number,
-                        false, ContactUtils.generateRandomColor()).call();
+                        false, ContactUtils.generateRandomColor(), 0).call();
                 // Show success and failure Toasts.
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
