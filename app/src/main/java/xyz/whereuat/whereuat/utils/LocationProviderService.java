@@ -1,8 +1,10 @@
 package xyz.whereuat.whereuat.utils;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -12,6 +14,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 /**
@@ -38,6 +41,11 @@ public class LocationProviderService extends Service implements OnConnectionFail
      */
     public static Location getLocation() {
         try {
+            LocationRequest request = LocationRequest.create();
+            request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, request,
+                    (PendingIntent) null);
+
             return LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         } catch (SecurityException e) {
             Log.d(TAG, "No location permission");
