@@ -2,7 +2,7 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">10dp</dimen>
-    <dimen name="edittext_horiz_padding">10dp</dimen>
+    <dimen name="edittext_horiz_padding">30dp</dimen>
     <dimen name="text_input_height">50dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="front_initials_font_size">80sp</dimen>
@@ -22,4 +22,5 @@
     <dimen name="toolbar_title_size">18sp</dimen>
     <dimen name="logo_font_size">50sp</dimen>
     <dimen name="lato_prompt_font_size">18sp</dimen>
+    <dimen name="phone_input_spacing">20dp</dimen>
 </resources>

@@ -45,18 +45,43 @@
             android:layout_marginBottom="@dimen/spacing_margin"
             android:textSize="@dimen/lato_prompt_font_size" />
 
-        <EditText
-            android:id="@+id/phone_number_input"
-            android:background="@drawable/textinputborder"
-            android:focusable="true"
-            android:gravity="center"
-            android:hint="@string/phone_number_input_text"
-            android:inputType="phone"
-            android:layout_height="@dimen/text_input_height"
-            android:layout_width="wrap_content"
-            android:paddingStart="@dimen/edittext_horiz_padding"
-            android:paddingEnd="@dimen/edittext_horiz_padding"
-            android:textColor="@color/offBlack" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal" >
+
+            <xyz.whereuat.whereuat.ui.views.LatoEditTextView
+                android:id="@+id/area_code_input"
+                android:background="@drawable/textinputborder"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:textCursorDrawable="@null"
+                app:lato_font="light"
+                android:hint="@string/area_code_input_hint"
+                android:inputType="phone"
+                android:layout_height="@dimen/text_input_height"
+                android:layout_width="wrap_content"
+                android:paddingStart="@dimen/edittext_horiz_padding"
+                android:paddingEnd="@dimen/edittext_horiz_padding"
+                android:layout_marginRight="@dimen/phone_input_spacing"
+                android:textColor="@color/offBlack" />
+
+            <xyz.whereuat.whereuat.ui.views.LatoEditTextView
+                android:id="@+id/line_number_input"
+                android:background="@drawable/textinputborder"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:textCursorDrawable="@null"
+                app:lato_font="light"
+                android:hint="@string/line_number_input_hint"
+                android:inputType="phone"
+                android:layout_height="@dimen/text_input_height"
+                android:layout_width="wrap_content"
+                android:paddingStart="@dimen/edittext_horiz_padding"
+                android:paddingEnd="@dimen/edittext_horiz_padding"
+                android:textColor="@color/offBlack" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -99,9 +124,11 @@
             android:id="@+id/verification_code_input"
             android:background="@drawable/textinputborder"
             android:focusable="true"
-            android:gravity="center"
+            android:gravity="center_vertical"
+            android:textCursorDrawable="@null"
             android:hint="@string/verification_input_text"
             android:inputType="numberDecimal"
+            android:maxLength="5"
             android:layout_height="@dimen/text_input_height"
             android:layout_width="wrap_content"
             android:paddingStart="@dimen/edittext_horiz_padding"
