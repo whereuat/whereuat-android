@@ -59,8 +59,8 @@
             android:textColor="@color/offBlack" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/account_request_btn"
+    <RelativeLayout
+        android:id="@+id/account_request_btn_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
@@ -68,14 +68,16 @@
         android:gravity="center_horizontal" >
 
         <Button
+            android:id="@+id/account_request_btn"
             android:background="@color/coolRed"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:onClick="requestAccount"
             android:text="@string/account_request_btn_text"
             android:textAllCaps="false"
-            android:textColor="@color/offWhite" />
-    </LinearLayout>
+            android:textColor="@color/offWhite"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/verification_code_prompt"
@@ -109,22 +111,35 @@
             android:textColor="@color/offBlack" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/account_create_btn"
+    <RelativeLayout
+        android:id="@+id/account_create_btn_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:orientation="vertical"
         android:gravity="center_horizontal"
+        android:layout_below="@id/verification_code_prompt"
         android:visibility="gone">
 
         <Button
+            android:id="@+id/account_create_btn"
             android:background="@color/coolRed"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:onClick="createNewAccount"
             android:text="@string/account_create_btn_text"
             android:textAllCaps="false"
-            android:textColor="@color/offWhite" />
-    </LinearLayout>
+            android:textColor="@color/offWhite"
+            android:layout_centerHorizontal="true" />
+
+        <ProgressBar
+            android:id="@+id/account_create_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:indeterminateDrawable="@drawable/spinner"
+            android:indeterminateDuration="1000"
+            android:layout_centerHorizontal="true"
+            android:indeterminate="true" />
+    </RelativeLayout>
 </LinearLayout>
