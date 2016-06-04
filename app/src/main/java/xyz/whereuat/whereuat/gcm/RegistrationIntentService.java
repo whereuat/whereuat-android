@@ -24,6 +24,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
+import java.util.Random;
+
 import xyz.whereuat.whereuat.Constants;
 import xyz.whereuat.whereuat.R;
 
@@ -60,6 +62,9 @@ public class RegistrationIntentService extends IntentService {
         // server.
         Intent registrationComplete = new Intent(Constants.TOKEN_BROADCAST);
         registrationComplete.putExtra(Constants.TOKEN_EXTRA, token);
+        // Unique broadcast ID to prevent broadcast receiver from receiving the same broadcast twice
+        registrationComplete.putExtra(Constants.TOKEN_BROADCAST_ID_EXTRA,
+                new Random().nextInt(Integer.MAX_VALUE));
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 }
