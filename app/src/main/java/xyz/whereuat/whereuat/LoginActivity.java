@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
 
         public void onReceive(Context context, Intent intent) {
             // Check the unique broadcast ID. If it is a repeat, ignore the broadcast.
-            Integer broadcast_id = intent.getIntExtra(Constants.TOKEN_BROADCAST_ID_EXTRA, 0);
+            Integer broadcast_id = intent.getIntExtra(Constants.TOKEN_BROADCAST_ID_EXTRA, -1);
             if (received_ids.contains(broadcast_id) || broadcast_id == 0)
                 return;
             received_ids.add(broadcast_id);
