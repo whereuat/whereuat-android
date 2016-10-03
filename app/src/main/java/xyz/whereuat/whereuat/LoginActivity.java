@@ -127,7 +127,6 @@ public class LoginActivity extends AppCompatActivity {
      * @param v unused, only here so the function can be bound in the XML file
      */
     public void requestAccount(View v) {
-        // TODO: Actually make it pull from mAreaEdit and mLineEdit and fix isValidPhoneForm()
         String raw_phone_number = mAreaEdit.getText().toString() + mLineEdit.getText().toString();
         Log.d(TAG, raw_phone_number);
         if (isValidPhoneForm(raw_phone_number)) {
@@ -206,15 +205,15 @@ public class LoginActivity extends AppCompatActivity {
     private void setAreaEditListeners() {
         mAreaEdit.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
             @Override
             public void afterTextChanged(Editable s) {
+                // Restrict the length of the area code to 3 characters and send the overflow to
+                // the line number
                 if (s.length() > AREA_CODE_LENGTH) {
                     String overflow = s.subSequence(AREA_CODE_LENGTH, s.length()).toString();
                     s.delete(AREA_CODE_LENGTH, s.length());
@@ -231,31 +230,36 @@ public class LoginActivity extends AppCompatActivity {
             // TODO: Revert first selection position of line number entry to last position of area
             //       code entry
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() >= LINE_NUMBER_LENGTH+1) {
+                // Restrict the length of the line number to the maximum of 8 (7 + 1 for the hyphen)
+                if (s.length() > LINE_NUMBER_LENGTH+1) {
                     s.delete(LINE_NUMBER_LENGTH+1, s.length());
                 }
+                // Delete the hyphen character if it is in the wrong position or if it is the last
+                // character in the line number
                 for (int i = 0; i < s.length(); i++) {
                     if ((i != 3 || i == s.length()) && s.charAt(i) == '-') {
                         s.delete(i, i+1);
                     }
                 }
+                // Insert the hyphen character if the line number is at least four characters long
                 if (s.length() >= 4) {
                     if (s.charAt(3) != '-') {
                         s.insert(3, "-");
                     }
+                    // Delete the hyphen automatically if it's the last character so that the user
+                    // doesn't have to do it themselves
                     if (s.charAt(s.length()-1) == '-') {
                         s.delete(s.length()-1, s.length());
                     }
                 }
+
                 if (mLineEdit.getSelectionStart() == mLineEdit.getSelectionEnd() &&
                         mLineEdit.getSelectionStart() == 0) {
                     mAreaEdit.requestFocus();

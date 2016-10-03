@@ -120,12 +120,13 @@
             android:layout_marginBottom="@dimen/spacing_margin"
             android:textSize="@dimen/lato_prompt_font_size"/>
 
-        <EditText
+        <xyz.whereuat.whereuat.ui.views.LatoEditTextView
             android:id="@+id/verification_code_input"
             android:background="@drawable/textinputborder"
             android:focusable="true"
             android:gravity="center_vertical"
             android:textCursorDrawable="@null"
+            app:lato_font="light"
             android:hint="@string/verification_input_text"
             android:inputType="numberDecimal"
             android:maxLength="5"
