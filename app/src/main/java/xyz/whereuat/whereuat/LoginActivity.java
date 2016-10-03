@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     private View[] mAccountRequestSection;
     private View[] mAccountCreateSection;
     private View mCreateBtn;
-    private View mSpinner;
+    private View mProgressWheel;
     private HttpRequestHandler mHttpReqHandler;
     private TokenBroadcastReceiver mTokenReceiver;
     private IntentFilter mTokenFilter;
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         mAccountCreateSection = new View[] {findViewById(R.id.verification_code_prompt),
                findViewById(R.id.account_create_btn_layout)};
         mCreateBtn = findViewById(R.id.account_create_btn);
-        mSpinner = findViewById(R.id.account_create_spinner);
+        mProgressWheel = findViewById(R.id.account_create_progress_wheel);
         mHttpReqHandler = new HttpRequestHandler(this);
 
         mTokenFilter = new IntentFilter(Constants.TOKEN_BROADCAST);
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param v unused, only here so the function can be bound in the XML file
      */
     public void requestAccount(View v) {
-        showButtonHideSpinner();
+        showButtonHideWheel();
         String phone_number = mPhoneEdit.getText().toString();
         if (isValidPhoneForm(phone_number)) {
             mHttpReqHandler.postAccountRequest(phone_number,
@@ -176,16 +176,15 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void showButtonHideSpinner() {
-        mSpinner.setVisibility(View.GONE);
+    private void showButtonHideWheel() {
+        mProgressWheel.setVisibility(View.GONE);
         mCreateBtn.setVisibility(View.VISIBLE);
     }
 
-    private void showSpinnerHideButton() {
-        mSpinner.setAlpha(0f);
-        mSpinner.setVisibility(View.VISIBLE);
-
-        mSpinner.animate()
+    private void showWheelHideButton() {
+        mProgressWheel.setVisibility(View.VISIBLE);
+        mProgressWheel.setAlpha(0f);
+        mProgressWheel.animate()
                 .alpha(1f)
                 .setDuration(500)
                 .setListener(null);
@@ -202,12 +201,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Starts the RegistrationIntentService.
+     * Displays the transition wheel and starts the RegistrationIntentService.
      *
      * @param v unused, only here so the function can be bound in the XML file
      */
     public void createNewAccount(View v) {
-        showSpinnerHideButton();
+        showWheelHideButton();
         startService(new Intent(this, RegistrationIntentService.class));
     }
 

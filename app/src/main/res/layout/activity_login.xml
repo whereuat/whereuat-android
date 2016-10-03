@@ -133,11 +133,11 @@
             android:layout_centerHorizontal="true" />
 
         <ProgressBar
-            android:id="@+id/account_create_spinner"
+            android:id="@+id/account_create_progress_wheel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:indeterminateDrawable="@drawable/spinner"
+            android:indeterminateDrawable="@drawable/verification_progress_wheel"
             android:indeterminateDuration="1000"
             android:layout_centerHorizontal="true"
             android:indeterminate="true" />
