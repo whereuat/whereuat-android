@@ -1,5 +1,7 @@
 package xyz.whereuat.whereuat;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
     private PreferenceController mPrefs;
     private View[] mAccountRequestSection;
     private View[] mAccountCreateSection;
+    private View mCreateBtn;
+    private View mProgressWheel;
     private HttpRequestHandler mHttpReqHandler;
     private TokenBroadcastReceiver mTokenReceiver;
     private IntentFilter mTokenFilter;
@@ -49,9 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         mPhoneEdit = (EditText) findViewById(R.id.phone_number_input);
         mVerifyCode = (EditText) findViewById(R.id.verification_code_input);
         mAccountRequestSection = new View[] {findViewById(R.id.phone_number_prompt),
-                findViewById(R.id.account_request_btn)};
+                findViewById(R.id.account_request_btn_layout)};
         mAccountCreateSection = new View[] {findViewById(R.id.verification_code_prompt),
-               findViewById(R.id.account_create_btn)};
+               findViewById(R.id.account_create_btn_layout)};
+        mCreateBtn = findViewById(R.id.account_create_btn);
+        mProgressWheel = findViewById(R.id.account_create_progress_wheel);
         mHttpReqHandler = new HttpRequestHandler(this);
 
         mTokenFilter = new IntentFilter(Constants.TOKEN_BROADCAST);
@@ -91,31 +97,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * This function shows the text input for entering the user's phone number and hides the text
-     * input for entering the verification code.
-     */
-    private void showCreateHideRequest() {
-        Animation out_anim = AnimationUtils.loadAnimation(this, R.anim.out_to_left);
-        Animation in_anim = AnimationUtils.loadAnimation(this, R.anim.in_from_right);
-
-        for (View v : mAccountCreateSection) {
-            v.startAnimation(in_anim);
-            v.setVisibility(View.VISIBLE);
-        }
-
-        for (View v : mAccountRequestSection) {
-            v.startAnimation(out_anim);
-            v.setVisibility(View.GONE);
-        }
-    }
-
-    /**
      * If the phone number is valid, sends an account request to the server and changes the UI to
      * the verification view.
      *
      * @param v unused, only here so the function can be bound in the XML file
      */
     public void requestAccount(View v) {
+        showButtonHideWheel();
         String phone_number = mPhoneEdit.getText().toString();
         if (isValidPhoneForm(phone_number)) {
             mHttpReqHandler.postAccountRequest(phone_number,
@@ -151,6 +139,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
+     * This function shows the text input for entering the user's phone number and hides the text
+     * input for entering the verification code.
+     */
+    private void showCreateHideRequest() {
+        Animation out_anim = AnimationUtils.loadAnimation(this, R.anim.out_to_left);
+        Animation in_anim = AnimationUtils.loadAnimation(this, R.anim.in_from_right);
+
+        for (View v : mAccountCreateSection) {
+            v.startAnimation(in_anim);
+            v.setVisibility(View.VISIBLE);
+        }
+
+        for (View v : mAccountRequestSection) {
+            v.startAnimation(out_anim);
+            v.setVisibility(View.GONE);
+        }
+    }
+
+    /**
      * This function shows the text input for entering the verification code and hides the text
      * input for entering the user's phone number.
      */
@@ -169,12 +176,37 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void showButtonHideWheel() {
+        mProgressWheel.setVisibility(View.GONE);
+        mCreateBtn.setVisibility(View.VISIBLE);
+    }
+
+    private void showWheelHideButton() {
+        mProgressWheel.setVisibility(View.VISIBLE);
+        mProgressWheel.setAlpha(0f);
+        mProgressWheel.animate()
+                .alpha(1f)
+                .setDuration(500)
+                .setListener(null);
+
+        mCreateBtn.animate()
+                .alpha(0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mCreateBtn.setVisibility(View.GONE);
+                        mCreateBtn.setAlpha(1f);
+                    }
+                });
+    }
+
     /**
-     * Starts the RegistrationIntentService.
+     * Displays the transition wheel and starts the RegistrationIntentService.
      *
      * @param v unused, only here so the function can be bound in the XML file
      */
     public void createNewAccount(View v) {
+        showWheelHideButton();
         startService(new Intent(this, RegistrationIntentService.class));
     }
 
