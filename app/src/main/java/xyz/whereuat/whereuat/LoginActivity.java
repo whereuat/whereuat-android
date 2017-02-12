@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -228,7 +229,15 @@ public class LoginActivity extends AppCompatActivity {
      * after generating the GCM token.
      */
     private class TokenBroadcastReceiver extends BroadcastReceiver {
+        private HashSet<Integer> received_ids = new HashSet<>();
+
         public void onReceive(Context context, Intent intent) {
+            // Check the unique broadcast ID. If it is a repeat, ignore the broadcast.
+            Integer broadcast_id = intent.getIntExtra(Constants.TOKEN_BROADCAST_ID_EXTRA, -1);
+            if (received_ids.contains(broadcast_id) || broadcast_id == 0)
+                return;
+            received_ids.add(broadcast_id);
+
             String token = intent.getStringExtra(Constants.TOKEN_EXTRA);
             mHttpReqHandler.postAccountNew(mPrefs.getClientPhoneNumber(), token,
                     mVerifyCode.getText().toString(),

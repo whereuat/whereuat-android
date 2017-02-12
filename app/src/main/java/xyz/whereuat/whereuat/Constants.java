@@ -23,6 +23,7 @@ public class Constants {
     // Constants related to extras in intents sent from the application.
     public static final String NOTIFICATION_ID_EXTRA = "NOTIFICATION_ID";
     public static final String TOKEN_EXTRA = "TOKEN";
+    public static final String TOKEN_BROADCAST_ID_EXTRA = "TOKEN_BROADCAST_ID";
     public static final String TO_PHONE_EXTRA = "TO_PHONE_EXTRA";
 
     public static final String CONTACT_NUMBER_BUNDLE_EXTRA = "CONTACT_NUMBER_BUNDLE_EXTRA";
